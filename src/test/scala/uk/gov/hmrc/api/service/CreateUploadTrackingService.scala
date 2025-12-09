@@ -12,6 +12,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.*
 
 class CreateUploadTrackingService extends HttpClient {
+  // TODO: URLs need to be configured / changed
   val host: String = TestEnvironment.url("create-upload-tracking-stub")
   val endpoint: String = "/123/create-upload-tracking"
 
