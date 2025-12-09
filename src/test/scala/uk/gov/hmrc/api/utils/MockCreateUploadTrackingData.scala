@@ -1,7 +1,7 @@
 package uk.gov.hmrc.api.utils
 
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
-
+  
 object MockCreateUploadTrackingData {
   /** A valid payload that should be successful */
   def getSuccessfulCreateUploadTrackingPayload: CreateUploadTrackingPayload = CreateUploadTrackingPayload(
@@ -22,8 +22,4 @@ object MockCreateUploadTrackingData {
     "https://xxxx/upscan-upload-proxy/bucketName",
     "2025-11-31T06:49:19.571Z"
   )
-
-  /** A bunch of incomplete payload(s) that should fail due to missing required information  */
-
-
 }

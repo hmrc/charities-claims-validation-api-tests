@@ -2,6 +2,7 @@ package uk.gov.hmrc.api.models
 
 import play.api.libs.json.{Json, OFormat}
 
+/** Case and Object for a successful CreateUploadTracking Payload */
 case class CreateUploadTrackingPayload (
                                          reference: String,
                                          validationType: String,
