@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.api.service
 
 import play.api.libs.json.Json
@@ -13,22 +29,22 @@ import scala.concurrent.duration.*
 
 class CreateUploadTrackingService extends HttpClient {
   // TODO: URLs need to be configured / changed
-  val host: String = TestEnvironment.url("create-upload-tracking-stub")
+  val host: String     = TestEnvironment.url("create-upload-tracking-stub")
   val endpoint: String = "/123/create-upload-tracking"
 
-  /** Can be used to pass in a complete payload object
-   * This can include correct and incorrect Payloads, i.e., successful or invalid "validationType" which will cause a failure */
-  def postAPayloadObject(payload: CreateUploadTrackingPayload): StandaloneWSResponse = {
+  /** Can be used to pass in a complete payload object This can include correct and incorrect Payloads, i.e., successful
+    * or invalid "validationType" which will cause a failure
+    */
+  def postAPayloadObject(payload: CreateUploadTrackingPayload): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
         .withHttpHeaders("Content-Type" -> "application/json")
         .post(Json.toJson(payload)),
       10.seconds
     )
-  }
 
   /** Used to cause a failure due to request body missing required parameters */
-  def postInvalidJSON: StandaloneWSResponse = {
+  def postInvalidJSON: StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
         .withHttpHeaders("Content-Type" -> "application/json")
@@ -40,5 +56,4 @@ class CreateUploadTrackingService extends HttpClient {
         ),
       10.seconds
     )
-  }
 }

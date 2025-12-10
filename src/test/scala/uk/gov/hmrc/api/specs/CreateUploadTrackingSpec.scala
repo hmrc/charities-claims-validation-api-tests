@@ -1,3 +1,19 @@
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
@@ -7,7 +23,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
   Feature("Charities - Create Upload Tracking API") {
     Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)") {
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val payload = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
+      val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
       val response = createUploadTrackingStub.postAPayloadObject(payload)
 
       Then("A 200 status code should be returned")
@@ -19,7 +35,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
 
     Scenario("Invalid Payload - User wants to upload a spreadsheet for charity claim(s)") {
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
-      val payload = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
+      val payload  = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
       val response = createUploadTrackingStub.postAPayloadObject(payload)
 
       Then("A 422 as 'validationType' is incorrect status code should be returned")
