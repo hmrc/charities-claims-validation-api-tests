@@ -17,15 +17,18 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.Assertions.fail
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.service.AuthService
 
 class AuthHelper {
   val authAPI: AuthService = new AuthService
 
-  def getAuthBearerToken: String = {
-    val authServiceRequestResponse = authAPI.postLogin
-    authServiceRequestResponse
-      .header("Authorization")
-      .getOrElse(fail(s"Could not obtain auth bearer token. Auth Service Response: $authServiceRequestResponse"))
+  def getAuthBearerToken(): String = {
+    val authServiceRequestResponse1: StandaloneWSResponse = authAPI.callAuthSignIn()
+    val cookies                                           = authServiceRequestResponse1.cookies.map(c => s"${c.name}=${c.value}").mkString("; ")
+    val authServiceRequestResponse2: StandaloneWSResponse = authAPI.getBearerToken(cookies)
+    val authTokenRegex                                    = """(?s)data-session-id="authToken".*?<code[^>]*>(.*?)</code>""".r
+    val authTokenOpt                                      = authTokenRegex.findFirstMatchIn(authServiceRequestResponse2.body).map(_.group(1))
+    authTokenOpt.getOrElse("No authToken found")
   }
 }

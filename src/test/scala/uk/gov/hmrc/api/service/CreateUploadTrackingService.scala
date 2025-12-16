@@ -28,17 +28,16 @@ import scala.concurrent.Await
 import scala.concurrent.duration.*
 
 class CreateUploadTrackingService extends HttpClient {
-  // TODO: URLs need to be configured / changed
-  val host: String     = TestEnvironment.url("create-upload-tracking-stub")
-  val endpoint: String = "/123/create-upload-tracking"
+  val host: String     = TestEnvironment.url("Charities Claims Validation")
+  val endpoint: String = "/claim-123/create-upload-tracking"
 
   /** Can be used to pass in a complete payload object This can include correct and incorrect Payloads, i.e., successful
     * or invalid "validationType" which will cause a failure
     */
-  def postAPayloadObject(payload: CreateUploadTrackingPayload): StandaloneWSResponse =
+  def postAPayloadObject(payload: CreateUploadTrackingPayload, token: String): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> token)
         .post(Json.toJson(payload)),
       10.seconds
     )

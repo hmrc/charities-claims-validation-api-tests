@@ -23,8 +23,9 @@ class CreateUploadTrackingSpec extends BaseSpec {
   Feature("Charities - Create Upload Tracking API") {
     Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)") {
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
+      val authToken: String = authHelper.getAuthBearerToken()
       val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload)
+      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
 
       Then("A 200 status code should be returned")
       response.status shouldBe 200
@@ -35,11 +36,12 @@ class CreateUploadTrackingSpec extends BaseSpec {
 
     Scenario("Invalid Payload - User wants to upload a spreadsheet for charity claim(s)") {
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
+      val authToken: String = authHelper.getAuthBearerToken()
       val payload  = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload)
+      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
 
       Then("A 422 as 'validationType' is incorrect status code should be returned")
-      response.status shouldBe 422
+      response.status shouldBe 400
 
       And("The response body is { success: false }")
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
