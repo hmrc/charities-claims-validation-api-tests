@@ -17,18 +17,17 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.Assertions.fail
-import play.api.libs.ws.StandaloneWSResponse
+import play.api.libs.json.Json
+import play.api.libs.ws.{StandaloneWSRequest, StandaloneWSResponse}
+import uk.gov.hmrc.api.models.CreateOrganisationAuthPayload
 import uk.gov.hmrc.api.service.AuthService
+import uk.gov.hmrc.api.utils.OrganisationAuthData
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuthHelper {
-  val authAPI: AuthService = new AuthService
-
-  def getAuthBearerToken(): String = {
-    val authServiceRequestResponse1: StandaloneWSResponse = authAPI.callAuthSignIn()
-    val cookies                                           = authServiceRequestResponse1.cookies.map(c => s"${c.name}=${c.value}").mkString("; ")
-    val authServiceRequestResponse2: StandaloneWSResponse = authAPI.getBearerToken(cookies)
-    val authTokenRegex                                    = """(?s)data-session-id="authToken".*?<code[^>]*>(.*?)</code>""".r
-    val authTokenOpt                                      = authTokenRegex.findFirstMatchIn(authServiceRequestResponse2.body).map(_.group(1))
-    authTokenOpt.getOrElse("No authToken found")
-  }
+  var bearerToken: String                    = ""
+  val authAPI: AuthService                   = new AuthService
+  val payload: CreateOrganisationAuthPayload = OrganisationAuthData().getOrganisationAuthPayload
 }

@@ -37,16 +37,22 @@ class CreateUploadTrackingService extends HttpClient {
   def postAPayloadObject(payload: CreateUploadTrackingPayload, token: String): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
-        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> token)
+        .withHttpHeaders(
+          "Content-Type"  -> "application/json",
+          "Authorization" -> s"Bearer $token"
+        )
         .post(Json.toJson(payload)),
       10.seconds
     )
 
   /** Used to cause a failure due to request body missing required parameters */
-  def postInvalidJSON: StandaloneWSResponse =
+  def postInvalidJSON(token: String): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders(
+          "Content-Type"  -> "application/json",
+          "Authorization" -> s"Bearer $token"
+        )
         .post(
           """{
             |  "reference": "f5da5578-8393-4cd1-be0e-d8ef1b78d8e7",

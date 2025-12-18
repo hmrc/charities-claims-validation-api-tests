@@ -16,59 +16,36 @@
 
 package uk.gov.hmrc.api.service
 
-import play.api.libs.ws.DefaultBodyWritables.writeableOf_urlEncodedSimpleForm
-import play.api.libs.ws.StandaloneWSResponse
+import play.api.libs.json.Json
+import play.api.libs.ws.DefaultBodyWritables.{writeableOf_String, writeableOf_urlEncodedSimpleForm}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
+import play.api.libs.ws.StandaloneWSRequest
 import uk.gov.hmrc.api.conf.TestEnvironment
+import uk.gov.hmrc.api.models.CreateOrganisationAuthPayload
 import uk.gov.hmrc.apitestrunner.http.HttpClient
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.Future
 
 class AuthService extends HttpClient {
-  val host: String = TestEnvironment.url("auth")
-  val url = s"$host/auth-login-stub/gg-sign-in"
+  val host: String     = TestEnvironment.url("auth")
+  val endpoint: String = "/government-gateway/session/login"
 
-  def callAuthSignIn(): StandaloneWSResponse = {
-    val formData: Map[String, String] = Map(
-      "redirectionUrl" -> "http://localhost:8030/charities-claims",
-      "excludeGnapToken" -> "false",
-      "credentialStrength" -> "strong",
-      "confidenceLevel" -> "50",
-      "affinityGroup" -> "Organisation",
-      "email" -> "user@test.com",
-      "credentialRole" -> "User",
-      "additionalInfo.emailVerified" -> "N/A",
-      "presets-dropdown" -> "IR-SA",
-      "enrolment[0].name" -> "HMRC-CHAR-ORG",
-      "enrolment[0].taxIdentifier[0].name" -> "CHARID",
-      "enrolment[0].taxIdentifier[0].value" -> "claim-123",
-      "enrolment[0].state" -> "Activated",
-      "enrolment[1].state" -> "Activated",
-      "enrolment[2].state" -> "Activated",
-      "enrolment[3].state" -> "Activated"
-    )
-    Await.result(
-      mkRequest(url)
-        .withHttpHeaders(
-          "Content-Type" -> "application/x-www-form-urlencoded",
-          "Accept" -> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "User-Agent" -> "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        )
-        .withFollowRedirects(false)
-        .post(formData),
-      10.seconds
-    )
-  }
+  def postAuthPayload(payload: CreateOrganisationAuthPayload): Future[String] =
+    mkRequest(host + endpoint)
+      .post(Json.toJson(payload))
+      .flatMap { response =>
+        extractBearerToken(response) match {
+          case Some(token) => Future.successful(token)
+          case None        => Future.failed(new RuntimeException("Authorization bearer token not found"))
+        }
+      }
 
-  def getBearerToken(cookies: String): StandaloneWSResponse =
-    Await.result(
-      wsClient
-        .url("http://localhost:9949/auth-login-stub/session")
-        .withHttpHeaders(
-          "Accept" -> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "User-Agent" -> "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-          "Cookie" -> cookies
-        )
-        .get(),
-      10.seconds
-    )
+  def extractBearerToken(response: StandaloneWSRequest#Response): Option[String] =
+    // Get all values of the "Authorization" header as a sequence
+    response.headers.get("Authorization").flatMap { values =>
+      values.collectFirst {
+        case headerValue if headerValue.contains("Bearer ") =>
+          // Split on "Bearer " and take what's after it
+          headerValue.split("Bearer ", 2)(1).trim
+      }
+    }
 }
