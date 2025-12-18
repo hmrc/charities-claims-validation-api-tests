@@ -29,6 +29,6 @@ class AuthHelper {
     val authServiceRequestResponse2: StandaloneWSResponse = authAPI.getBearerToken(cookies)
     val authTokenRegex                                    = """(?s)data-session-id="authToken".*?<code[^>]*>(.*?)</code>""".r
     val authTokenOpt                                      = authTokenRegex.findFirstMatchIn(authServiceRequestResponse2.body).map(_.group(1))
-    authTokenOpt.getOrElse("No authToken found")
+    authTokenOpt.getOrElse(fail("No authToken found"))
   }
 }

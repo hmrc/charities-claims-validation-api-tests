@@ -40,7 +40,7 @@ class AuthService extends HttpClient {
       "presets-dropdown" -> "IR-SA",
       "enrolment[0].name" -> "HMRC-CHAR-ORG",
       "enrolment[0].taxIdentifier[0].name" -> "CHARID",
-      "enrolment[0].taxIdentifier[0].value" -> "claim-123",
+      "enrolment[0].taxIdentifier[0].value" -> "claim-456",
       "enrolment[0].state" -> "Activated",
       "enrolment[1].state" -> "Activated",
       "enrolment[2].state" -> "Activated",

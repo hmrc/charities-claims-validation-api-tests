@@ -19,21 +19,31 @@ package uk.gov.hmrc.api.service
 import uk.gov.hmrc.api.conf.TestEnvironment
 import uk.gov.hmrc.apitestrunner.http.HttpClient
 import play.api.libs.json.Json
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSResponse
+import play.api.libs.ws.DefaultBodyReadables._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.*
 
-class DeleteSingleUploadService extends HttpClient {
+class GovGatewayAuthService extends HttpClient {
+  val host: String = TestEnvironment.url("government-gateway")
+  val url          = s"$host/government-gateway/session/login"
 
-  val host: String     = TestEnvironment.url("Charities Claims Validation")
-  val endpoint: String = "/upload-results"
-
-  def deleteSingleUpload(claimId: String, ref: String, authorizationHeaderValue: String): StandaloneWSResponse =
-    Await.result(
-      mkRequest(s"$host/$claimId$endpoint/$ref")
-        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> authorizationHeaderValue)
-        .delete(),
-      30.seconds
-    )
-}
+  def authorizationHeader(jsonBody: String): String = {
+    val response: StandaloneWSResponse = {
+      Await.result(
+        mkRequest(url)
+          .withHttpHeaders(
+            "Content-Type" -> "application/json",
+            "Accept"       -> "application/json"
+          )
+          .post(Json.parse(jsonBody)),
+        10.seconds
+      )
+    }
+      val authHeaderOpt: Option[String] = 
+        response.headers.get("Authorization").flatMap(_.headOption)
+      authHeaderOpt.getOrElse("Authorisation header missing")
+    }
+  }

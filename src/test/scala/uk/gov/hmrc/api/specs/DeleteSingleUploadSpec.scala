@@ -17,28 +17,35 @@
 
 package uk.gov.hmrc.api.specs
 
+import uk.gov.hmrc.api.service.GovGatewayAuthService
+import uk.gov.hmrc.api.helpers.GovGatewayAuthHelper
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.utils.BaseSpec
-//import uk.gov.hmrc.api.service.
 
 // Happy Paths
 
 class DeleteSingleUploadSpec extends BaseSpec {
   val deleteSingleUploadService = new DeleteSingleUploadService()
-  
+
   Feature("Delete Single Upload API") {
-    
+
     Scenario("Delete one upload from a multi-upload claim") {
-      
+
       Given("A valid claimId and ref")
-      val authToken: String = authHelper.getAuthBearerToken()
+      val authService = new GovGatewayAuthService()
+      val jsonBody: String = GovGatewayAuthHelper.loginBody(charId = "123456789")
+      val authorizationHeaderValue: String = authService.authorizationHeader(jsonBody)
       val claimId = "claim-456"
       val ref = "ref-001"
-      
+
       When("I send DELETE request to the Endpoint")
-      val response = deleteSingleUploadService.deleteSingleUpload("claim-456", "ref-001", authToken)
-      
+      val response = deleteSingleUploadService.deleteSingleUpload(
+        claimId = claimId,
+        ref = ref, 
+        authorizationHeaderValue = authorizationHeaderValue
+      )
+
       Then("A 200 status code should be returned")
       response.status shouldBe 200
 
