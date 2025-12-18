@@ -18,7 +18,8 @@ package uk.gov.hmrc.api.utils
 
 import uk.gov.hmrc.api.models.{CreateOrganisationAuthPayload, OrganisationEnrolmentDetails, OrganisationIdentifiersDetails}
 
-// TODO: CredID should be a random number
+import scala.util.Random
+
 class OrganisationAuthData {
   def getOrganisationIdentifierPayload: OrganisationIdentifiersDetails = OrganisationIdentifiersDetails(
     key = "CHARID",
@@ -32,7 +33,7 @@ class OrganisationAuthData {
   )
 
   def getOrganisationAuthPayload: CreateOrganisationAuthPayload = CreateOrganisationAuthPayload(
-    credId = "123456789",
+    credId = Random.alphanumeric.take(16).mkString,
     confidenceLevel = 200,
     credentialStrength = "strong",
     affinityGroup = "Organisation",
