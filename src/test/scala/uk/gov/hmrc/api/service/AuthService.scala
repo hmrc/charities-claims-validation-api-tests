@@ -17,35 +17,22 @@
 package uk.gov.hmrc.api.service
 
 import play.api.libs.json.Json
-import play.api.libs.ws.DefaultBodyWritables.{writeableOf_String, writeableOf_urlEncodedSimpleForm}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
-import play.api.libs.ws.StandaloneWSRequest
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.conf.TestEnvironment
 import uk.gov.hmrc.api.models.CreateOrganisationAuthPayload
 import uk.gov.hmrc.apitestrunner.http.HttpClient
-import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.Await
 
 class AuthService extends HttpClient {
   val host: String     = TestEnvironment.url("auth")
   val endpoint: String = "/government-gateway/session/login"
 
-  def postAuthPayload(payload: CreateOrganisationAuthPayload): Future[String] =
-    mkRequest(host + endpoint)
-      .post(Json.toJson(payload))
-      .flatMap { response =>
-        extractBearerToken(response) match {
-          case Some(token) => Future.successful(token)
-          case None        => Future.failed(new RuntimeException("Authorization bearer token not found"))
-        }
-      }
-
-  def extractBearerToken(response: StandaloneWSRequest#Response): Option[String] =
-    // Get all values of the "Authorization" header as a sequence
-    response.headers.get("Authorization").flatMap { values =>
-      values.collectFirst {
-        case headerValue if headerValue.contains("Bearer ") =>
-          // Split on "Bearer " and take what's after it
-          headerValue.split("Bearer ", 2)(1).trim
-      }
-    }
+  def postAuthPayload(payload: CreateOrganisationAuthPayload): StandaloneWSResponse =
+    Await.result(
+      mkRequest(host + endpoint)
+        .post(Json.toJson(payload)),
+      10.seconds
+    )
 }
