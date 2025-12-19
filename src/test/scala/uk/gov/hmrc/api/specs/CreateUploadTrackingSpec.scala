@@ -24,15 +24,12 @@ import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 class CreateUploadTrackingSpec extends BaseSpec {
   Feature("Charities - Create Upload Tracking API - E2E") {
     Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)", E2ETest) {
-      Given("There is an AUTH Token")
-      val authToken: String = authHelper.bearerToken
-
-      And("The auth token is valid")
-      assert(!authToken.contains("No Auth Token Found"))
+      Given("There is an Auth Token and it's valid")
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
+      val response = createUploadTrackingStub.postAPayloadObject(payload, authHelper.bearerToken)
 
       Then("A 201 status code should be returned")
       response.status shouldBe 201
@@ -44,12 +41,12 @@ class CreateUploadTrackingSpec extends BaseSpec {
 
   Feature("Charities - Create Upload Tracking API - All Test Cases") {
     Scenario("Invalid Payload - User wants to upload a spreadsheet for charity claim(s)") {
-      Given("There is an AUTH Token")
-      val authToken: String = authHelper.bearerToken
+      Given("There is an Auth Token and it's valid")
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
       val payload  = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
+      val response = createUploadTrackingStub.postAPayloadObject(payload, authHelper.bearerToken)
 
       Then("A 400 as 'validationType' is incorrect status code should be returned")
       response.status shouldBe 400
@@ -59,14 +56,29 @@ class CreateUploadTrackingSpec extends BaseSpec {
     }
 
     Scenario("Incomplete Payload - User wants to upload a spreadsheet for charity claim(s)") {
-      Given("There is an AUTH Token")
-      val authToken: String = authHelper.bearerToken
+      Given("There is an Auth Token and it's valid")
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent an incomplete POST Request")
-      val response = createUploadTrackingStub.postInvalidJSON(authToken)
+      val response = createUploadTrackingStub.postInvalidJSON(authHelper.bearerToken)
 
       Then("A 400 status code should be returned due to missing required information")
       response.status shouldBe 400
+
+      And("The response body is { success: false }")
+      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+    }
+
+    Scenario("The 'validationType' is a duplicate for this claimID") {
+      Given("There is an Auth Token and it's valid")
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+
+      When("The CreateUploadTracking Endpoint is sent a valid POST Request")
+      val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
+      val response = createUploadTrackingStub.postAPayloadObject(payload, authHelper.bearerToken)
+
+      Then("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
+      response.status shouldBe 500
 
       And("The response body is { success: false }")
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
