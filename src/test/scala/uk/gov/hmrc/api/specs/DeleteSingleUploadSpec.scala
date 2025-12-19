@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import uk.gov.hmrc.api.service.GovGatewayAuthService
-import uk.gov.hmrc.api.helpers.GovGatewayAuthHelper
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.specs.tags.E2ETest
