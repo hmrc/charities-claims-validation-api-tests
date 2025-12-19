@@ -47,7 +47,7 @@ object CreateUpscanCallbackSuccessfulPayload {
 /** The Request Body for a failed Upscan Callback includes a nested object for "failureDetails" */
 case class FailureDetailsUpscanCallback(
   failureReason: String,
-  messages: String
+  message: String
 )
 
 object FailureDetailsUpscanCallback {

@@ -20,23 +20,44 @@ import uk.gov.hmrc.api.models.{CreateUpscanCallbackFailedPayload, CreateUpscanCa
 
 object MockCreateUpscanCallbackData {
 
-  /** A valid Payload that should return a SUCCESS response */
-  def getSuccessfulCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload = {
-    val uploadDetailsUpscanCallback: UploadDetailsUpscanCallback = UploadDetailsUpscanCallback(
-      fileName = "test.pdf",
-      fileMimeType = "application/pdf",
-      uploadTimestamp = "2018-04-24T09:30:00Z",
-      checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
-      size = 987
-    )
+  /** Common data */
+  private val commonUploadDetailsUpscanCallback: UploadDetailsUpscanCallback = UploadDetailsUpscanCallback(
+    fileName = "test.pdf",
+    fileMimeType = "application/vnd.oasis.opendocument.spreadsheet",
+    uploadTimestamp = "2018-04-24T09:30:00Z",
+    checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
+    size = 987
+  )
 
+  /** A valid Payload that should return a SUCCESS response */
+  def getSuccessfulCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload =
     CreateUpscanCallbackSuccessfulPayload(
-      reference = "11370e18-6e24-453e-b45a-76d3e32ea33d",
+      reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e8",
       downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
       fileStatus = "READY",
-      uploadDetails = uploadDetailsUpscanCallback
+      uploadDetails = commonUploadDetailsUpscanCallback
+    )
+
+  /** A valid Payload that should return a 400 response as the file type is wrong */
+  def getInvalidFileTypeCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload = {
+    val differentMimeType = commonUploadDetailsUpscanCallback.copy(fileMimeType = "application/pdf")
+
+    CreateUpscanCallbackSuccessfulPayload(
+      reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e8",
+      downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
+      fileStatus = "READY",
+      uploadDetails = differentMimeType
     )
   }
+
+  /** A valid Payload that should return a 404 response as the reference does not exist */
+  def getInvalidReferenceCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload =
+    CreateUpscanCallbackSuccessfulPayload(
+      reference = "this-reference-does-not-exist",
+      downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
+      fileStatus = "READY",
+      uploadDetails = commonUploadDetailsUpscanCallback
+    )
 
   /** Request body payload(s) that should result in FAILURE
     *   - QUARANTINE - The file has failed virus scanning
@@ -45,17 +66,17 @@ object MockCreateUpscanCallbackData {
     */
   private def getQuarantinedFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
     failureReason = "QUARANTINE",
-    messages = "e.g. This file has a virus"
+    message = "e.g. This file has a virus"
   )
 
   private def getRejectedFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
     failureReason = "REJECTED",
-    messages = "MIME type $mime is not allowed for service $service-name"
+    message = "MIME type $mime is not allowed for service $service-name"
   )
 
   private def getUnknownFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
     failureReason = "UNKNOWN",
-    messages = "Something unknown happened"
+    message = "Something unknown happened"
   )
 
   /** The "failureType" refers to "failureDetails", i.e., QUARANTINE (0), REJECTED (1), UNKNOWN (2) */
@@ -67,7 +88,7 @@ object MockCreateUpscanCallbackData {
     }
 
     CreateUpscanCallbackFailedPayload(
-      reference = "11370e18-6e24-453e-b45a-76d3e32ea33d",
+      reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e8",
       fileStatus = "FAILED",
       failureDetails = failureDetails
     )

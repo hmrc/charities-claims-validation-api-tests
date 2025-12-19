@@ -27,22 +27,27 @@ import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
 class CreateUpscanCallbackService extends HttpClient {
-  // TODO: URLs need to be configured / changed
-  val host: String     = TestEnvironment.url("create-upscan-callback-stub")
-  val endpoint: String = "/123/upscan-callback"
+  val host: String     = TestEnvironment.url("Charities Claims Validation")
+  val endpoint: String = "/claim-123/upscan-callback"
 
-  def postSuccessfulPayloadObject(payload: CreateUpscanCallbackSuccessfulPayload): StandaloneWSResponse =
+  def postSuccessfulPayloadObject(payload: CreateUpscanCallbackSuccessfulPayload, token: String): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders(
+          "Content-Type"  -> "application/json",
+          "Authorization" -> s"Bearer $token"
+        )
         .post(Json.toJson(payload)),
       10.seconds
     )
 
-  def postUnsuccessfulPayloadObject(payload: CreateUpscanCallbackFailedPayload): StandaloneWSResponse =
+  def postUnsuccessfulPayloadObject(payload: CreateUpscanCallbackFailedPayload, token: String): StandaloneWSResponse =
     Await.result(
       mkRequest(host + endpoint)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders(
+          "Content-Type"  -> "application/json",
+          "Authorization" -> s"Bearer $token"
+        )
         .post(Json.toJson(payload)),
       10.seconds
     )
