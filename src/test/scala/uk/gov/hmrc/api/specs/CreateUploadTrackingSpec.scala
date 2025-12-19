@@ -18,11 +18,12 @@ package uk.gov.hmrc.api.specs
 
 import org.scalactic.Prettifier.default
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 
 class CreateUploadTrackingSpec extends BaseSpec {
-  Feature("Charities - Create Upload Tracking API") {
-    Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)") {
+  Feature("Charities - Create Upload Tracking API - E2E") {
+    Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)", E2ETest) {
       Given("There is an AUTH Token")
       val authToken: String = authHelper.bearerToken
 
@@ -36,7 +37,9 @@ class CreateUploadTrackingSpec extends BaseSpec {
       And("The response body is { success: true }")
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
     }
+  }
 
+  Feature("Charities - Create Upload Tracking API - All Test Cases") {
     Scenario("Invalid Payload - User wants to upload a spreadsheet for charity claim(s)") {
       Given("There is an AUTH Token")
       val authToken: String = authHelper.bearerToken
