@@ -20,7 +20,7 @@ import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import uk.gov.hmrc.api.helpers.AuthHelper
-import uk.gov.hmrc.api.service.{AuthService, CreateDeleteUploadService, CreateUploadTrackingService, CreateUpscanCallbackService}
+import uk.gov.hmrc.api.service.{AuthService, CreateUploadTrackingService}
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {
   val authHelper: AuthHelper                                = new AuthHelper

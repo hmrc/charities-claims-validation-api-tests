@@ -28,7 +28,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
       val authToken: String = authHelper.bearerToken
 
       And("The auth token is valid")
-      assert(authToken.contains("No Auth Token Found"))
+      assert(!authToken.contains("No Auth Token Found"))
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload

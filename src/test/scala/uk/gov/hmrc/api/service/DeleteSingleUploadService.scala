@@ -18,9 +18,7 @@ package uk.gov.hmrc.api.service
 
 import uk.gov.hmrc.api.conf.TestEnvironment
 import uk.gov.hmrc.apitestrunner.http.HttpClient
-import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
-
 import scala.concurrent.Await
 import scala.concurrent.duration.*
 
