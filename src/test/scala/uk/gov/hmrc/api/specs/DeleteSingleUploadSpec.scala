@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-
 package uk.gov.hmrc.api.specs
 
 import uk.gov.hmrc.api.service.GovGatewayAuthService
 import uk.gov.hmrc.api.helpers.GovGatewayAuthHelper
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
-import uk.gov.hmrc.api.utils.BaseSpec
+import uk.gov.hmrc.api.specs.tags.E2ETest
+import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 
 // Happy Paths
 
@@ -30,20 +30,22 @@ class DeleteSingleUploadSpec extends BaseSpec {
 
   Feature("Delete Single Upload API") {
 
-    Scenario("Delete one upload from a multi-upload claim") {
+    Scenario("Delete one upload from a multi-upload claim", E2ETest) {
+      Given("There is an AUTH Token")
+      val authToken: String = authHelper.bearerToken
 
-      Given("A valid claimId and ref")
-      val authService = new GovGatewayAuthService()
-      val jsonBody: String = GovGatewayAuthHelper.loginBody(charId = "123456789")
-      val authorizationHeaderValue: String = authService.authorizationHeader(jsonBody)
+      And("The auth token is valid")
+      assert(!authToken.contains("No Auth Token Found"))
+
+      When("A valid claimId and ref")
       val claimId = "claim-456"
-      val ref = "ref-001"
+      val ref     = "ref-001"
 
       When("I send DELETE request to the Endpoint")
       val response = deleteSingleUploadService.deleteSingleUpload(
         claimId = claimId,
-        ref = ref, 
-        authorizationHeaderValue = authorizationHeaderValue
+        ref = ref,
+        authorizationHeaderValue = authToken
       )
 
       Then("A 200 status code should be returned")

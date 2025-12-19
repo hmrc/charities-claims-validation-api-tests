@@ -31,7 +31,7 @@ class GovGatewayAuthService extends HttpClient {
   val url          = s"$host/government-gateway/session/login"
 
   def authorizationHeader(jsonBody: String): String = {
-    val response: StandaloneWSResponse = {
+    val response: StandaloneWSResponse =
       Await.result(
         mkRequest(url)
           .withHttpHeaders(
@@ -41,9 +41,8 @@ class GovGatewayAuthService extends HttpClient {
           .post(Json.parse(jsonBody)),
         10.seconds
       )
-    }
-      val authHeaderOpt: Option[String] = 
-        response.headers.get("Authorization").flatMap(_.headOption)
-      authHeaderOpt.getOrElse("Authorisation header missing")
-    }
+    val authHeaderOpt: Option[String]  =
+      response.headers.get("Authorization").flatMap(_.headOption)
+    authHeaderOpt.getOrElse("Authorisation header missing")
   }
+}

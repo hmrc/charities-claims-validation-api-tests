@@ -32,8 +32,8 @@ class DeleteSingleUploadService extends HttpClient {
   def deleteSingleUpload(claimId: String, ref: String, authorizationHeaderValue: String): StandaloneWSResponse =
     Await.result(
       mkRequest(s"$host/$claimId$endpoint/$ref")
-        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> authorizationHeaderValue)
+        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> s"Bearer $authorizationHeaderValue")
         .delete(),
-      30.seconds
+      10.seconds
     )
 }
