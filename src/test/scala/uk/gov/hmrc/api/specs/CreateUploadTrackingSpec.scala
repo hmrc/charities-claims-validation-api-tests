@@ -32,7 +32,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
+      val response = createUploadTrackingStub.postAPayloadObject("claim-123", payload, authToken)
 
       Then("A 201 status code should be returned")
       response.status shouldBe 201
@@ -49,7 +49,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
 
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
       val payload  = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
-      val response = createUploadTrackingStub.postAPayloadObject(payload, authToken)
+      val response = createUploadTrackingStub.postAPayloadObject("claim-123", payload, authToken)
 
       Then("A 400 as 'validationType' is incorrect status code should be returned")
       response.status shouldBe 400
@@ -63,7 +63,7 @@ class CreateUploadTrackingSpec extends BaseSpec {
       val authToken: String = authHelper.bearerToken
 
       When("The CreateUploadTracking Endpoint is sent an incomplete POST Request")
-      val response = createUploadTrackingStub.postInvalidJSON(authToken)
+      val response = createUploadTrackingStub.postInvalidJSON("claim-123", authToken)
 
       Then("A 400 status code should be returned due to missing required information")
       response.status shouldBe 400

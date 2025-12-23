@@ -17,27 +17,25 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 
 // Happy Paths
 
-class DeleteSingleUploadSpec extends BaseSpec {
-  val deleteSingleUploadService = new DeleteSingleUploadService()
+class DeleteSingleUploadSpec extends BaseSpec with UploadTestDataHelper {
 
   Feature("Delete Single Upload API") {
 
     Scenario("Delete one upload from a multi-upload claim", E2ETest) {
-      Given("There is an AUTH Token")
+      Given("There is a valid AUTH Token")
       val authToken: String = authHelper.bearerToken
-
-      And("The auth token is valid")
-      assert(!authToken.contains("No Auth Token Found"))
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("A valid claimId and ref")
       val claimId = "claim-456"
-      val ref     = "ref-001"
+      val ref     = seedUploadTestData(claimId, authToken)
 
       When("I send DELETE request to the Endpoint")
       val response = deleteSingleUploadService.deleteSingleUpload(
@@ -52,6 +50,8 @@ class DeleteSingleUploadSpec extends BaseSpec {
       And("The response body is { success: true }")
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
     }
+
+//    Scenario("Delete the ONLY upload associated to a claim", E2ETest) {
   }
 
 //  Feature("Charities - Create Delete Upload API - Multi Delete") {
