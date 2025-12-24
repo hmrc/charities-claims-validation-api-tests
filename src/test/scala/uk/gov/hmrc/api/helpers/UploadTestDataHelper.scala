@@ -23,30 +23,29 @@ import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 
-
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 //  services used for seeding and cleanup
-  val createUploadTrackingService = new CreateUploadTrackingService()
-  val deleteSingleUploadService = new DeleteSingleUploadService()
+  val createUploadTrackingService          = new CreateUploadTrackingService()
+  val deleteSingleUploadService            = new DeleteSingleUploadService()
 //  Store everything created for easy cleanup
-  val seeded: ListBuffer[(String, String)] = ListBuffer.empty 
+  val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
   def seedUploadTestData(claimId: String, authToken: String, ref: String = UUID.randomUUID().toString): String = {
-    val payload = MockCreateUploadTrackingData.successfulPayloadWithReference(ref)
+    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(ref)
     val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
     response.status shouldBe 201
     seeded += ((claimId, ref))
-    
+
     ref
   }
 
   override protected def afterEach(): Unit = {
-    seeded.foreach {case (claimId, ref) =>
-    try {deleteSingleUploadService.deleteSingleUpload(claimId, ref, authHelper.bearerToken)}
-     catch{ case _: Throwable => ()}
+    seeded.foreach { case (claimId, ref) =>
+      try deleteSingleUploadService.deleteSingleUpload(claimId, ref, authHelper.bearerToken)
+      catch { case _: Throwable => () }
     }
     seeded.clear()
-    
+
     super.afterEach()
   }
 }

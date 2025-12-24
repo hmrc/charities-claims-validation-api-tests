@@ -30,4 +30,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
 //  val createUpscanStub: CreateUpscanCallbackService         = new CreateUpscanCallbackService
 
   authHelper.fetchAuthBearerToken()
+  protected def authToken: String = {
+    val token = authHelper.bearerToken
+    token shouldNot include("No Auth Token Found")
+    token
+  }
 }
