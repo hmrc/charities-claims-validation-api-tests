@@ -45,4 +45,5 @@ object MockCreateUploadTrackingData {
   def successfulPayloadWithReference(reference: String): CreateUploadTrackingPayload =
     getSuccessfulCreateUploadTrackingPayload.copy(reference = reference)
 
+  def getValidClaimId: String = "claim-123"
 }
