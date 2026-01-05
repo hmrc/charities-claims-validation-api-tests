@@ -30,4 +30,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val updateUploadStatusService                             = new UpdateUploadStatusService
 
   authHelper.fetchAuthBearerToken()
+  protected def authToken: String = {
+    val token = authHelper.bearerToken
+    token shouldNot include("No Auth Token Found")
+    token
+  }
 }

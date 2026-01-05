@@ -40,4 +40,9 @@ object MockCreateUploadTrackingData {
     uploadUrl = "https://xxxx/upscan-upload-proxy/bucketName",
     initiateTimestamp = "2025-11-30T06:49:19.571Z"
   )
+
+  //  For use for DELETE endpoint
+  def successfulPayloadWithReference(reference: String): CreateUploadTrackingPayload =
+    getSuccessfulCreateUploadTrackingPayload.copy(reference = reference)
+
 }
