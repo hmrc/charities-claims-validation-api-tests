@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.specs
+package uk.gov.hmrc.api.models
 
-import org.scalatest.featurespec.AnyFeatureSpec
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.GivenWhenThen
+import play.api.libs.json.{Json, OFormat}
 
-trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers {}
+case class UpdateUploadStatusPayload(
+  fileStatus: String
+)
+
+object UpdateUploadStatusPayload {
+  implicit val format: OFormat[UpdateUploadStatusPayload] = Json.format[UpdateUploadStatusPayload]
+}
