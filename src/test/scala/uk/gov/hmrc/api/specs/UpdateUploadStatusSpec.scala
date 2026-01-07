@@ -22,36 +22,6 @@ import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData, MockCreateUpscanCallbackData, MockUpdateUploadStatusData, ValidationType}
 
 class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
-  // Don't need this now simply using the Test Helper to insert records as needed in each Scenario as data is purged after each one
-//  Feature("Preloading necessary data") {
-//    /** UpdateUploadStatus test data needs two sets of valid data one with fileStatus = "AWAITING_UPLOAD" and another
-//      * with fileStatus != "AWAITING_UPLOAD", i.e., fileStatus = "VERIFYING"
-//      */
-//    Scenario("Uploading test data to be used for UpdateUploadStatus", E2ETest) {
-//      Given("There is an Auth Token and it's valid")
-//      authToken shouldNot contain("No Auth Token Found")
-//
-//      // Send the first payload
-//
-//      // Send the second payload
-//      And("We have sent the second set of test data for UpdateUploadStatus API to the DB")
-//
-//      // Now need to update the second payloads "fileStatus" from "AWAITING_UPLOAD" to something different
-//      And("We have hit the CreateUpscanCallback API to update fileStatus from 'AWAITING_UPLOAD' to 'VERIFYING'")
-//      val upscanCallbackPayload  = MockCreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-//        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus
-//      )
-//      val upscanCallbackResponse = createUpscanService.postSuccessfulPayloadObject(
-//        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-//        upscanCallbackPayload,
-//        authToken
-//      )
-//
-//      Then("A 204 status code should be returned")
-//      upscanCallbackResponse.status shouldBe 204
-//    }
-//  }
-
   Feature("Charities - Update Upload Status API - E2E") {
     Scenario("Successful Payload - A valid claim that is 'AWAITING_UPLOAD' has been updated", E2ETest) {
       Given("There is an Auth Token and it's valid")
