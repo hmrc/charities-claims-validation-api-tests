@@ -17,72 +17,57 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData, MockCreateUpscanCallbackData, MockUpdateUploadStatusData, ValidationType}
 
-class UpdateUploadStatusSpec extends BaseSpec {
-  Feature("Preloading necessary data") {
-
-    /** UpdateUploadStatus test data needs two sets of valid data one with fileStatus = "AWAITING_UPLOAD" and another
-      * with fileStatus != "AWAITING_UPLOAD", i.e., fileStatus = "VERIFYING"
-      */
-    Scenario("Uploading test data to be used for UpdateUploadStatus", E2ETest) {
-      Given("There is an Auth Token and it's valid")
-      authToken shouldNot contain("No Auth Token Found")
-
-      // Send the first payload
-      When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
-      val firstPayload = MockCreateUploadTrackingData.customSuccessfulPayLoad(
-        MockUpdateUploadStatusData.getValidReference,
-        ValidationType.GiftAid.toString
-      )
-
-      val firstResponse = createUploadTrackingService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimId,
-        firstPayload,
-        authToken
-      )
-
-      Then("A 201 status code should be returned")
-      firstResponse.status shouldBe 201
-
-      // Send the second payload
-      And("We have sent the second set of test data for UpdateUploadStatus API to the DB")
-      val secondPayload  = MockCreateUploadTrackingData.customSuccessfulPayLoad(
-        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus,
-        ValidationType.GiftAid.toString
-      )
-      val secondResponse = createUploadTrackingService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        secondPayload,
-        authToken
-      )
-
-      Then("A 201 status code should be returned")
-      secondResponse.status shouldBe 201
-
-      // Now need to update the second payloads "fileStatus" from "AWAITING_UPLOAD" to something different
-      And("We have hit the CreateUpscanCallback API to update fileStatus from 'AWAITING_UPLOAD' to 'VERIFYING'")
-      val upscanCallbackPayload  = MockCreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus
-      )
-      val upscanCallbackResponse = createUpscanService.postSuccessfulPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        upscanCallbackPayload,
-        authToken
-      )
-
-      Then("A 204 status code should be returned")
-      upscanCallbackResponse.status shouldBe 204
-    }
-  }
+class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
+  // Don't need this now simply using the Test Helper to insert records as needed in each Scenario as data is purged after each one
+//  Feature("Preloading necessary data") {
+//    /** UpdateUploadStatus test data needs two sets of valid data one with fileStatus = "AWAITING_UPLOAD" and another
+//      * with fileStatus != "AWAITING_UPLOAD", i.e., fileStatus = "VERIFYING"
+//      */
+//    Scenario("Uploading test data to be used for UpdateUploadStatus", E2ETest) {
+//      Given("There is an Auth Token and it's valid")
+//      authToken shouldNot contain("No Auth Token Found")
+//
+//      // Send the first payload
+//
+//      // Send the second payload
+//      And("We have sent the second set of test data for UpdateUploadStatus API to the DB")
+//
+//      // Now need to update the second payloads "fileStatus" from "AWAITING_UPLOAD" to something different
+//      And("We have hit the CreateUpscanCallback API to update fileStatus from 'AWAITING_UPLOAD' to 'VERIFYING'")
+//      val upscanCallbackPayload  = MockCreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+//        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus
+//      )
+//      val upscanCallbackResponse = createUpscanService.postSuccessfulPayloadObject(
+//        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+//        upscanCallbackPayload,
+//        authToken
+//      )
+//
+//      Then("A 204 status code should be returned")
+//      upscanCallbackResponse.status shouldBe 204
+//    }
+//  }
 
   Feature("Charities - Update Upload Status API - E2E") {
     Scenario("Successful Payload - A valid claim that is 'AWAITING_UPLOAD' has been updated", E2ETest) {
       Given("There is an Auth Token and it's valid")
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
-      When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
+      When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
+      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+        authToken,
+        MockUpdateUploadStatusData.getValidClaimId,
+        MockUpdateUploadStatusData.getValidReference
+      )
+
+      Then("A 201 status code should be returned")
+      sendingTestDataResponse.status shouldBe 201
+
+      And("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
         MockUpdateUploadStatusData.getValidClaimId,
@@ -103,6 +88,15 @@ class UpdateUploadStatusSpec extends BaseSpec {
     Scenario("Successful Payload - A valid claim that IS NOT 'AWAITING_UPLOAD'") {
       Given("There is an Auth Token and it's valid")
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
+
+      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+        authToken,
+        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus
+      )
+
+      Then("A 201 status code should be returned")
+      sendingTestDataResponse.status shouldBe 201
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
