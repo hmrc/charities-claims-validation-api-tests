@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUpscanCallbackData}
+import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData, MockCreateUpscanCallbackData}
 
 class CreateUpscanCallbackSpec extends BaseSpec {
   Feature("Charities - Create Upscan Callback API - E2E") {
@@ -28,10 +27,55 @@ class CreateUpscanCallbackSpec extends BaseSpec {
 
       When("The CreateUpscanCallback Endpoint is sent a valid POST Request")
       val payload  = MockCreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
-      val response = createUpscanStub.postSuccessfulPayloadObject(payload, authHelper.bearerToken)
+      val response = createUpscanService.postSuccessfulPayloadObject(
+        MockCreateUploadTrackingData.getValidClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 204 status code should be returned")
       response.status shouldBe 204
+    }
+
+    Scenario("Uploading Successful Payloads to turn into failure details") {
+      Given("There is an Auth Token and it's valid")
+      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+
+      When("The CreateUploadTracking Endpoint is sent a valid POST Request - Quarantine")
+      val quarantinePayload  =
+        MockCreateUploadTrackingData.successfulPayloadWithReference(MockCreateUpscanCallbackData.getQuarantineRef)
+      val quarantineResponse = createUploadTrackingService.postAPayloadObject(
+        MockCreateUpscanCallbackData.getQuarantineClaimId,
+        quarantinePayload,
+        authHelper.bearerToken
+      )
+
+      Then("A 201 status code should be returned")
+      quarantineResponse.status shouldBe 201
+
+      And("The CreateUploadTracking Endpoint is sent a valid POST Request - Rejected")
+      val rejectedPayload  =
+        MockCreateUploadTrackingData.successfulPayloadWithReference(MockCreateUpscanCallbackData.getRejectedRef)
+      val rejectedResponse = createUploadTrackingService.postAPayloadObject(
+        MockCreateUpscanCallbackData.getRejectedClaimId,
+        rejectedPayload,
+        authHelper.bearerToken
+      )
+
+      Then("A 201 status code should be returned")
+      rejectedResponse.status shouldBe 201
+
+      And("The CreateUploadTracking Endpoint is sent a valid POST Request - Unknown")
+      val unknownPayload  =
+        MockCreateUploadTrackingData.successfulPayloadWithReference(MockCreateUpscanCallbackData.getUnknownRef)
+      val unknownResponse = createUploadTrackingService.postAPayloadObject(
+        MockCreateUpscanCallbackData.getUnknownClaimId,
+        unknownPayload,
+        authHelper.bearerToken
+      )
+
+      Then("A 201 status code should be returned")
+      unknownResponse.status shouldBe 201
     }
   }
 
@@ -41,8 +85,13 @@ class CreateUpscanCallbackSpec extends BaseSpec {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(0)
-      val response = createUpscanStub.postUnsuccessfulPayloadObject(payload, authHelper.bearerToken)
+      // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(0)
+      val payload  = MockCreateUpscanCallbackData.getQurantineUpscanCallbackPayload()
+      val response = createUpscanService.postUnsuccessfulPayloadObject(
+        MockCreateUpscanCallbackData.getQuarantineClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 204 status code should be returned")
       response.status shouldBe 204
@@ -53,8 +102,13 @@ class CreateUpscanCallbackSpec extends BaseSpec {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(1)
-      val response = createUpscanStub.postUnsuccessfulPayloadObject(payload, authHelper.bearerToken)
+      // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(1)
+      val payload  = MockCreateUpscanCallbackData.getRejectedUpscanCallbackPayload()
+      val response = createUpscanService.postUnsuccessfulPayloadObject(
+        MockCreateUpscanCallbackData.getRejectedClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 204 status code should be returned")
       response.status shouldBe 204
@@ -65,8 +119,13 @@ class CreateUpscanCallbackSpec extends BaseSpec {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(2)
-      val response = createUpscanStub.postUnsuccessfulPayloadObject(payload, authHelper.bearerToken)
+      // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(2)
+      val payload  = MockCreateUpscanCallbackData.getUnknownUpscanCallbackPayload()
+      val response = createUpscanService.postUnsuccessfulPayloadObject(
+        MockCreateUpscanCallbackData.getUnknownClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 204 status code should be returned")
       response.status shouldBe 204
@@ -78,7 +137,11 @@ class CreateUpscanCallbackSpec extends BaseSpec {
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       val payload  = MockCreateUpscanCallbackData.getInvalidFileTypeCreateUpscanCallbackPayload
-      val response = createUpscanStub.postSuccessfulPayloadObject(payload, authHelper.bearerToken)
+      val response = createUpscanService.postSuccessfulPayloadObject(
+        MockCreateUploadTrackingData.getValidClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 400 status code should be returned")
       response.status shouldBe 400
@@ -90,7 +153,11 @@ class CreateUpscanCallbackSpec extends BaseSpec {
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       val payload  = MockCreateUpscanCallbackData.getInvalidReferenceCreateUpscanCallbackPayload
-      val response = createUpscanStub.postSuccessfulPayloadObject(payload, authHelper.bearerToken)
+      val response = createUpscanService.postSuccessfulPayloadObject(
+        MockCreateUploadTrackingData.getValidClaimId,
+        payload,
+        authHelper.bearerToken
+      )
 
       Then("A 404 status code should be returned")
       response.status shouldBe 404

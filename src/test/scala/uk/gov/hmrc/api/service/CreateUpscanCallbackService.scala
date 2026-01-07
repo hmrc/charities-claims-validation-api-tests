@@ -28,11 +28,15 @@ import scala.concurrent.duration.DurationInt
 
 class CreateUpscanCallbackService extends HttpClient {
   val host: String     = TestEnvironment.url("Charities Claims Validation")
-  val endpoint: String = "/claim-123/upscan-callback"
+  val endpoint: String = "upscan-callback"
 
-  def postSuccessfulPayloadObject(payload: CreateUpscanCallbackSuccessfulPayload, token: String): StandaloneWSResponse =
+  def postSuccessfulPayloadObject(
+    claimId: String,
+    payload: CreateUpscanCallbackSuccessfulPayload,
+    token: String
+  ): StandaloneWSResponse =
     Await.result(
-      mkRequest(host + endpoint)
+      mkRequest(s"$host/$claimId/$endpoint")
         .withHttpHeaders(
           "Content-Type"  -> "application/json",
           "Authorization" -> s"Bearer $token"
@@ -41,9 +45,13 @@ class CreateUpscanCallbackService extends HttpClient {
       10.seconds
     )
 
-  def postUnsuccessfulPayloadObject(payload: CreateUpscanCallbackFailedPayload, token: String): StandaloneWSResponse =
+  def postUnsuccessfulPayloadObject(
+    claimId: String,
+    payload: CreateUpscanCallbackFailedPayload,
+    token: String
+  ): StandaloneWSResponse =
     Await.result(
-      mkRequest(host + endpoint)
+      mkRequest(s"$host/$claimId/$endpoint")
         .withHttpHeaders(
           "Content-Type"  -> "application/json",
           "Authorization" -> s"Bearer $token"
