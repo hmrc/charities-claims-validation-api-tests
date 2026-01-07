@@ -23,11 +23,11 @@ import uk.gov.hmrc.api.helpers.AuthHelper
 import uk.gov.hmrc.api.service.{AuthService, CreateUploadTrackingService, CreateUpscanCallbackService, UpdateUploadStatusService}
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {
-  val authHelper: AuthHelper                                = new AuthHelper
-  val authService: AuthService                              = new AuthService
-  val createUploadTrackingStub: CreateUploadTrackingService = new CreateUploadTrackingService
-  val createUpscanStub: CreateUpscanCallbackService         = new CreateUpscanCallbackService
-  val updateUploadStatusService                             = new UpdateUploadStatusService
+  val authHelper: AuthHelper                                   = new AuthHelper
+  val authService: AuthService                                 = new AuthService
+  val createUploadTrackingService: CreateUploadTrackingService = new CreateUploadTrackingService
+  val createUpscanService: CreateUpscanCallbackService         = new CreateUpscanCallbackService
+  val updateUploadStatusService: UpdateUploadStatusService     = new UpdateUploadStatusService
 
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {

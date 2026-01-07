@@ -18,12 +18,18 @@ package uk.gov.hmrc.api.utils
 
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
 
+// The only valid types we are expecting for validationType in our payload
+enum ValidationType:
+  case GiftAid, OtherIncome, CommunityBuildings, ConnectedCharities
+
 object MockCreateUploadTrackingData {
+  // Used to differentiate documents in the DB to understand which API call created them
+  private val API_NAME: String = "Create-Upload-Tracking"
 
   /** A valid payload that should be successful */
   def getSuccessfulCreateUploadTrackingPayload: CreateUploadTrackingPayload = CreateUploadTrackingPayload(
-    reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e7",
-    validationType = "GiftAid",
+    reference = getValidReference,
+    validationType = ValidationType.GiftAid.toString,
     uploadUrl = "https://xxxx/upscan-upload-proxy/bucketName",
     initiateTimestamp = "2025-11-30T06:49:19.571Z"
   )
@@ -35,15 +41,27 @@ object MockCreateUploadTrackingData {
     *   - ConnectedCharities
     */
   def getInvalidValidationCreateUploadTrackingPayload: CreateUploadTrackingPayload = CreateUploadTrackingPayload(
-    reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e7",
+    reference = getInvalidReference,
     validationType = "Validation",
     uploadUrl = "https://xxxx/upscan-upload-proxy/bucketName",
     initiateTimestamp = "2025-11-30T06:49:19.571Z"
   )
 
-  //  For use for DELETE endpoint
+  //  Some helpful methods to allow us to override the default payload for more customizable DB data uploads
   def successfulPayloadWithReference(reference: String): CreateUploadTrackingPayload =
     getSuccessfulCreateUploadTrackingPayload.copy(reference = reference)
 
-  def getValidClaimId: String = "claim-123"
+  def successfulPayloadWithValidationType(validationType: String): CreateUploadTrackingPayload =
+    getSuccessfulCreateUploadTrackingPayload.copy(validationType = validationType)
+
+  def customSuccessfulPayLoad(reference: String, validationType: String): CreateUploadTrackingPayload =
+    getSuccessfulCreateUploadTrackingPayload.copy(reference = reference, validationType = validationType)
+
+  // Default claimID that will be used for CreateUploadTracking Spec and will be associated documents stored in the DB
+  def getValidClaimId: String   = s"$API_NAME-claim"
+  def getValidReference: String = s"$API_NAME-ref"
+
+  // For testing failures using some default failure details
+  def getInvalidClaimId: String   = s"$API_NAME-invalid-claim"
+  def getInvalidReference: String = s"$API_NAME-invalid-ref"
 }

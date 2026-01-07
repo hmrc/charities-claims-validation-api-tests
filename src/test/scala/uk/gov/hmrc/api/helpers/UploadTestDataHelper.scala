@@ -17,15 +17,13 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.api.service.{CreateUploadTrackingService, DeleteSingleUploadService}
+import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
-
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 //  services used for seeding and cleanup
-  val createUploadTrackingService          = new CreateUploadTrackingService()
   val deleteSingleUploadService            = new DeleteSingleUploadService()
 //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
@@ -37,6 +35,13 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     seeded += ((claimId, ref))
 
     ref
+  }
+
+  // Helpful method to allow us to upload custom payload to the DB
+  def uploadTestData(authToken: String, claimId: String, ref: String, validationType: String): Unit = {
+    val payload  = MockCreateUploadTrackingData.customSuccessfulPayLoad(ref, validationType)
+    val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
+    response.status shouldBe 201
   }
 
   override protected def afterEach(): Unit = {

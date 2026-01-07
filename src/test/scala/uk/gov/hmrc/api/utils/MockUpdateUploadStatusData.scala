@@ -19,6 +19,8 @@ package uk.gov.hmrc.api.utils
 import uk.gov.hmrc.api.models.UpdateUploadStatusPayload
 
 object MockUpdateUploadStatusData {
+  // Unique value to append to the claimId and reference to ensure we can hit endpoints with the intended documents / calls
+  private val API_NAME: String = "Update-Upload-Status"
 
   /** A valid payload */
   def getSuccessfulPayload: UpdateUploadStatusPayload = UpdateUploadStatusPayload(
@@ -37,8 +39,18 @@ object MockUpdateUploadStatusData {
     fileStatus = ""
   )
 
-  def getValidClaimId: String     = "claim-123"
-  def getValidReference: String   = "ref-001"
-  def getInvalidClaimId: String   = "invalid-claim-123"
-  def getInvalidReference: String = "invalid-ref-001"
+  /** The two valid claimIDs will be used to refer to data actually stored in the DB and will be used to check various
+    * edge cases, we need two different IDs as we want a claim to have the incorrect "fileStatus" to ensure behavior is
+    * what we expect
+    */
+  def getValidClaimId: String            = s"$API_NAME-claim"
+  def getValidClaimIdDifferentFileStatus = s"$API_NAME-claim-123"
+
+  /** As we will have two valid claims stored in the DB we should give them two different references */
+  def getValidReference: String            = s"$API_NAME-ref"
+  def getValidReferenceDifferentFileStatus = s"$API_NAME-ref-123"
+
+  /** Some test cases require us to pass in invalid data */
+  def getInvalidClaimId: String   = s"$API_NAME-invalid-claim"
+  def getInvalidReference: String = s"$API_NAME-invalid-ref"
 }
