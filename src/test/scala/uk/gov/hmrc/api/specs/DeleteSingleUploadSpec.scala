@@ -29,7 +29,7 @@ class DeleteSingleUploadSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Delete one upload from a multi-upload claim", E2ETest) {
       Given("There is a valid AUTH Token")
-      val token = authToken
+      authToken
 
       When("A valid claimId and ref")
       val claimId = "claim-456"
@@ -48,7 +48,7 @@ class DeleteSingleUploadSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Delete the ONLY upload associated to a claim", E2ETest) {
       Given("A valid existing claimId and ref in MongoDB")
-      val token = authToken
+      authToken
 
       val claimId = "claim-457"
       val ref     = seedUploadTestData(claimId, authToken)
@@ -77,7 +77,7 @@ class DeleteSingleUploadSpec extends BaseSpec with UploadTestDataHelper {
     }
 
     Scenario("Delete non-existent ref, but claimId is existent", E2ETest) {
-      val token = authToken
+      authToken
 
       Given("A valid claimId exists, but reference does not")
       val claimId        = "claim-890"

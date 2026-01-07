@@ -17,9 +17,8 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
-import uk.gov.hmrc.api.service.{CreateUploadTrackingService, DeleteSingleUploadService}
+import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
-
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 
