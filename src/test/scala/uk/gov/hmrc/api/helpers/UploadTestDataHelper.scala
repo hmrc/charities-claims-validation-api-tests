@@ -50,6 +50,22 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     response
   }
 
+  def uploadTestDataCustomIdAndReference(
+    authToken: String,
+    claimId: String,
+    reference: String
+  ): StandaloneWSResponse = {
+    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val response = createUploadTrackingService.postAPayloadObject(
+      claimId,
+      payload,
+      authToken
+    )
+
+    seeded += ((claimId, reference))
+    response
+  }
+
   override protected def afterEach(): Unit = {
     seeded.foreach { case (claimId, ref) =>
       try deleteSingleUploadService.deleteSingleUpload(claimId, ref, authHelper.bearerToken)
