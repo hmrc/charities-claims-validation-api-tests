@@ -23,6 +23,7 @@ enum ValidationType:
   case GiftAid, OtherIncome, CommunityBuildings, ConnectedCharities
 
 object MockCreateUploadTrackingData {
+  // Used to differentiate documents in the DB to understand which API call created them
   private val API_NAME: String = "Create-Upload-Tracking"
 
   /** A valid payload that should be successful */
@@ -56,7 +57,7 @@ object MockCreateUploadTrackingData {
   def customSuccessfulPayLoad(reference: String, validationType: String): CreateUploadTrackingPayload =
     getSuccessfulCreateUploadTrackingPayload.copy(reference = reference, validationType = validationType)
 
-  // Default claimID that will be used for CreateUploadTracking Spec
+  // Default claimID that will be used for CreateUploadTracking Spec and will be associated documents stored in the DB
   def getValidClaimId: String   = s"$API_NAME-claim"
   def getValidReference: String = s"$API_NAME-ref"
 

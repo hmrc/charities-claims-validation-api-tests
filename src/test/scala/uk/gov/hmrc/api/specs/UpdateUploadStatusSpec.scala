@@ -26,7 +26,7 @@ class UpdateUploadStatusSpec extends BaseSpec {
     /** UpdateUploadStatus test data needs two sets of valid data one with fileStatus = "AWAITING_UPLOAD" and another
       * with fileStatus != "AWAITING_UPLOAD", i.e., fileStatus = "VERIFYING"
       */
-    Scenario("Uploading test data to be used for UpdateUploadStatus") {
+    Scenario("Uploading test data to be used for UpdateUploadStatus", E2ETest) {
       Given("There is an Auth Token and it's valid")
       authToken shouldNot contain("No Auth Token Found")
 

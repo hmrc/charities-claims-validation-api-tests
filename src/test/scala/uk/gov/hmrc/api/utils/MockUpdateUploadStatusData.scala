@@ -19,6 +19,7 @@ package uk.gov.hmrc.api.utils
 import uk.gov.hmrc.api.models.UpdateUploadStatusPayload
 
 object MockUpdateUploadStatusData {
+  // Unique value to append to the claimId and reference to ensure we can hit endpoints with the intended documents / calls
   private val API_NAME: String = "Update-Upload-Status"
 
   /** A valid payload */
