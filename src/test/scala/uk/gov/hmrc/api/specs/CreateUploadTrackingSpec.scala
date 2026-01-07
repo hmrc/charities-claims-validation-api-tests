@@ -18,22 +18,18 @@ package uk.gov.hmrc.api.specs
 
 import org.scalactic.Prettifier.default
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 
-class CreateUploadTrackingSpec extends BaseSpec {
+class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upload Tracking API - E2E") {
     Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)", E2ETest) {
       Given("There is an Auth Token and it's valid")
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-      val response = createUploadTrackingService.postAPayloadObject(
-        MockCreateUploadTrackingData.getValidClaimId,
-        payload,
-        authHelper.bearerToken
-      )
+      val response = uploadDefaultTestData(authToken)
 
       Then("A 201 status code should be returned")
       response.status shouldBe 201
@@ -84,14 +80,12 @@ class CreateUploadTrackingSpec extends BaseSpec {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-      val response = createUploadTrackingService.postAPayloadObject(
-        MockCreateUploadTrackingData.getValidClaimId,
-        payload,
-        authHelper.bearerToken
-      )
+      val firstResponse = uploadDefaultTestData(authToken)
+      Then("A 201 response code is returned as the claim is initially added to the DB")
+      firstResponse.status shouldBe 201
+      val response = uploadDefaultTestData(authToken)
 
-      Then("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
+      And("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
       response.status shouldBe 500
 
       And("The response body is { success: false }")
