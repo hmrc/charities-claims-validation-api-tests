@@ -17,8 +17,10 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
+import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
+
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 
@@ -37,11 +39,31 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     ref
   }
 
-  // Helpful method to allow us to upload custom payload to the DB
-  def uploadTestData(authToken: String, claimId: String, ref: String, validationType: String): Unit = {
-    val payload  = MockCreateUploadTrackingData.customSuccessfulPayLoad(ref, validationType)
-    val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
-    response.status shouldBe 201
+  // Like seedUploadTestData however we simply use the default payload
+  def uploadDefaultTestData(authToken: String): StandaloneWSResponse = {
+    val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
+    val response =
+      createUploadTrackingService.postAPayloadObject(MockCreateUploadTrackingData.getValidClaimId, payload, authToken)
+
+    // Add the data to seeded to be cleaned up after the test has executed
+    seeded += ((MockCreateUploadTrackingData.getValidClaimId, MockCreateUploadTrackingData.getValidReference))
+    response
+  }
+
+  def uploadTestDataCustomIdAndReference(
+    authToken: String,
+    claimId: String,
+    reference: String
+  ): StandaloneWSResponse = {
+    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val response = createUploadTrackingService.postAPayloadObject(
+      claimId,
+      payload,
+      authToken
+    )
+
+    seeded += ((claimId, reference))
+    response
   }
 
   override protected def afterEach(): Unit = {
