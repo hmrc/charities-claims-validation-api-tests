@@ -287,9 +287,109 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     }
   }
 
+  // TODO: Could make this more DRY
   Feature("Charities - Get Upload Result API - Failed Response Bodies") {
-    Scenario("Getting all successful response bodies") {
+    Scenario("Request reference for given claimID is not found") {
+      authToken
 
+      Then("Upload Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getAwaitingUploadClaimId,
+        MockGetUploadResultData().getAwaitingUploadReference
+      )
+
+      /** Checking response body by sending in a reference that isn't the one stored in the DB */
+      When("We check that invalid reference returns expected response body")
+      val response = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getAwaitingUploadClaimId,
+        MockGetUploadResultData().getThisReferenceDoesNotExist,
+        authToken
+      )
+
+      And("Response code should be 404")
+      response.status shouldBe 404
+
+      And("The response body is what we expect ")
+      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+    }
+
+    Scenario("Request claimID is not found") {
+      authToken
+
+      Then("Upload Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getAwaitingUploadClaimId,
+        MockGetUploadResultData().getAwaitingUploadReference
+      )
+
+      /** Checking response body by sending in a claimID that isn't the one stored in the DB */
+      When("We check that invalid claimID returns expected response body")
+      val response = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getThisClaimIdDoesNotExist,
+        MockGetUploadResultData().getAwaitingUploadReference,
+        authToken
+      )
+
+      And("Response code should be 404")
+      response.status shouldBe 404
+
+      And("The response body is what we expect ")
+      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+    }
+
+    Scenario("Request claimID and reference not found") {
+      authToken
+
+      Then("Upload Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getAwaitingUploadClaimId,
+        MockGetUploadResultData().getAwaitingUploadReference
+      )
+
+      /** Checking response body by sending in a claimID and reference that isn't the one stored in the DB */
+      When("We check that invalid claimID and reference returns expected response body")
+      val response = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getThisClaimIdDoesNotExist,
+        MockGetUploadResultData().getThisReferenceDoesNotExist,
+        authToken
+      )
+
+      And("Response code should be 404")
+      response.status shouldBe 404
+
+      And("The response body is what we expect ")
+      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+    }
+
+    Scenario("Claim has expired") {
+      authToken
+
+      Then("Upload Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getAwaitingUploadHasExpiredClaimId,
+        MockGetUploadResultData().getAwaitingUploadHasExpiredClaimId
+      )
+
+      When("We check a claim that has passed its 7 days expiry")
+      val response = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getAwaitingUploadHasExpiredClaimId,
+        MockGetUploadResultData().getAwaitingUploadHasExpiredClaimId,
+        authToken
+      )
+
+      And("Response code should be 400")
+      response.status shouldBe 400
+
+      And("The response body is what we expect ")
+      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_HAS_EXPIRED"
+      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
     }
   }
 }
