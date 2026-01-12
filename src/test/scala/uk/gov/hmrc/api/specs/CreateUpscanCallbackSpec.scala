@@ -67,7 +67,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request using the same details just created")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(0)
-      val payload  = MockCreateUpscanCallbackData.getQuarantineUpscanCallbackPayload
+      val payload  = MockCreateUpscanCallbackData.getQuarantineUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
         MockCreateUpscanCallbackData.getQuarantineClaimId,
         payload,
@@ -93,7 +93,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(1)
-      val payload  = MockCreateUpscanCallbackData.getRejectedUpscanCallbackPayload
+      val payload  = MockCreateUpscanCallbackData.getRejectedUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
         MockCreateUpscanCallbackData.getRejectedClaimId,
         payload,
@@ -119,7 +119,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(2)
-      val payload  = MockCreateUpscanCallbackData.getUnknownUpscanCallbackPayload
+      val payload  = MockCreateUpscanCallbackData.getUnknownUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
         MockCreateUpscanCallbackData.getUnknownClaimId,
         payload,

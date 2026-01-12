@@ -110,23 +110,23 @@ object MockCreateUpscanCallbackData {
 //  }
 
   /** Quick fix as the method above causes stackoverflow issues when overriding reference */
-  def getQuarantineUpscanCallbackPayload: CreateUpscanCallbackFailedPayload =
+  def getQuarantineUpscanCallbackPayload(reference: String = getQuarantineRef): CreateUpscanCallbackFailedPayload =
     CreateUpscanCallbackFailedPayload(
-      reference = getQuarantineRef,
+      reference = reference,
       fileStatus = FILE_STATUS_FAILED,
       failureDetails = getQuarantinedFailureDetails
     )
 
-  def getRejectedUpscanCallbackPayload: CreateUpscanCallbackFailedPayload =
+  def getRejectedUpscanCallbackPayload(reference: String = getRejectedRef): CreateUpscanCallbackFailedPayload =
     CreateUpscanCallbackFailedPayload(
-      reference = getRejectedRef,
+      reference = reference,
       fileStatus = FILE_STATUS_FAILED,
       failureDetails = getRejectedFailureDetails
     )
 
-  def getUnknownUpscanCallbackPayload: CreateUpscanCallbackFailedPayload =
+  def getUnknownUpscanCallbackPayload(reference: String = getUnknownRef): CreateUpscanCallbackFailedPayload =
     CreateUpscanCallbackFailedPayload(
-      reference = getUnknownRef,
+      reference = reference,
       fileStatus = FILE_STATUS_FAILED,
       failureDetails = getUnknownFailureDetails
     )

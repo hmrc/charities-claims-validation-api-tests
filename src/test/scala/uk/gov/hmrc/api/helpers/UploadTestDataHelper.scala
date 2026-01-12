@@ -17,6 +17,7 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
+import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.service.DeleteSingleUploadService
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
@@ -39,6 +40,8 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     ref
   }
 
+  // TODO: Code is not DRY should revisit and clean up duplicated method
+  // TODO: We could keep the response being returned but could add Cucumber here instead of in the spec(s)
   // Like seedUploadTestData however we simply use the default payload
   def uploadDefaultTestData(authToken: String): StandaloneWSResponse = {
     val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
@@ -64,6 +67,29 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 
     seeded += ((claimId, reference))
     response
+  }
+
+  // TODO: This will be removed in refactoring of this class but for now same behaviour as class above
+  // but will not be returning a response just to keep the GetUploadResultSpec cleaner
+  def uploadTestDataCustomIdAndReferenceNoReturn(
+    authToken: String,
+    claimId: String,
+    reference: String
+  ): Unit = {
+    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val response = createUploadTrackingService.postAPayloadObject(
+      claimId,
+      payload,
+      authToken
+    )
+
+    Then("A 201 status code should be returned from CreateUploadTrackingSpec")
+    response.status shouldBe 201
+
+    And("The response body is { success: true }")
+    (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+
+    seeded += ((claimId, reference))
   }
 
   override protected def afterEach(): Unit = {
