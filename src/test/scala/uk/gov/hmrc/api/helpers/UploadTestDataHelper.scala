@@ -27,7 +27,7 @@ import scala.collection.mutable.ListBuffer
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 //  services used for seeding and cleanup
   val deleteSingleUploadService            = new DeleteSingleUploadService()
-  val deleteUploadsClaimService = new DeleteUploadsClaimService()
+  val deleteUploadsClaimService            = new DeleteUploadsClaimService()
 //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 

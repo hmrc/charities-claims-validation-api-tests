@@ -35,9 +35,8 @@ class DeleteUploadsSpec extends BaseSpec with UploadTestDataHelper {
       val claimId = "claim-345"
 
       When("I send DELETE request to the Endpoint")
-      val response = {
-       deleteUploadsClaimService.deleteUploads(claimId = claimId, authorizationHeaderValue = authToken)
-      }
+      val response =
+        deleteUploadsClaimService.deleteUploads(claimId = claimId, authorizationHeaderValue = authToken)
 
       Then("A 200 status code should be returned")
       response.status shouldBe 200
@@ -45,7 +44,6 @@ class DeleteUploadsSpec extends BaseSpec with UploadTestDataHelper {
       And("The response body is { success: true }")
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
     }
-
 
   }
 
