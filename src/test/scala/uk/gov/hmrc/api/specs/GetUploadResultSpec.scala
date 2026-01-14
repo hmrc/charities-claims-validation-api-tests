@@ -2,7 +2,6 @@ package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
-import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUpscanCallbackData, MockGetUploadResultData, MockUpdateUploadStatusData}
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
@@ -21,21 +20,21 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking AwaitingUpload response body */
       When("We check that AwaitingClaim returns expected response body")
-      val awaitingClaimResponse = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.postAPayloadObject(
         MockGetUploadResultData().getAwaitingUploadClaimId,
         MockGetUploadResultData().getAwaitingUploadReference,
         authToken
       )
 
       And("Response code should be 200")
-      awaitingClaimResponse.status shouldBe 200
+      response.status shouldBe 200
 
       And("The response body is what we expect")
-      (Json.parse(awaitingClaimResponse.body) \ "reference")
-        .as[String]                                                          shouldEqual MockGetUploadResultData().getAwaitingUploadReference
-      (Json.parse(awaitingClaimResponse.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(awaitingClaimResponse.body) \ "fileStatus").as[String]     shouldEqual "AWAITING_UPLOAD"
-      (Json.parse(awaitingClaimResponse.body) \ "uploadUrl").asOpt[String]      shouldBe defined
+      (Json.parse(response.body) \ "reference")
+        .as[String]                                             shouldEqual MockGetUploadResultData().getAwaitingUploadReference
+      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "AWAITING_UPLOAD"
+      (Json.parse(response.body) \ "uploadUrl").asOpt[String]      shouldBe defined
     }
 
     Scenario("Testing Verifying Response") {
@@ -61,20 +60,20 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check now that Verifying returns expected response body")
-      val verifyingClaimResponse = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.postAPayloadObject(
         MockGetUploadResultData().getVerifyingClaimId,
         MockGetUploadResultData().getVerifyingReference,
         authToken
       )
 
       And("Response code should be 200")
-      verifyingClaimResponse.status shouldBe 200
+      response.status shouldBe 200
 
       And("The response body is what we expect")
-      (Json.parse(verifyingClaimResponse.body) \ "reference")
-        .as[String]                                                           shouldEqual MockGetUploadResultData().getVerifyingReference
-      (Json.parse(verifyingClaimResponse.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(verifyingClaimResponse.body) \ "fileStatus").as[String]     shouldEqual "VERIFYING"
+      (Json.parse(response.body) \ "reference")
+        .as[String]                                             shouldEqual MockGetUploadResultData().getVerifyingReference
+      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "VERIFYING"
     }
 
     Scenario("Testing VERIFICATION_FAILED response body") {
@@ -211,20 +210,20 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check now that Validating returns expected response body")
-      val validatingClaimResponse = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.postAPayloadObject(
         MockGetUploadResultData().getValidatingClaimId,
         MockGetUploadResultData().getValidatingReference,
         authToken
       )
 
       And("Response code should be 200")
-      validatingClaimResponse.status shouldBe 200
+      response.status shouldBe 200
 
       And("The response body is what we expect")
-      (Json.parse(validatingClaimResponse.body) \ "reference")
-        .as[String]                                                            shouldEqual MockGetUploadResultData().getValidatingReference
-      (Json.parse(validatingClaimResponse.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(validatingClaimResponse.body) \ "fileStatus").as[String]     shouldEqual "VALIDATING"
+      (Json.parse(response.body) \ "reference")
+        .as[String]                                             shouldEqual MockGetUploadResultData().getValidatingReference
+      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "VALIDATING"
     }
 
     Scenario("Testing Data Valid Response") {
@@ -237,26 +236,31 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         MockGetUploadResultData().getDataValidReference
       )
 
+      /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become "VALIDATED"
+       * TODO: For this we need to have the file validated (can't do this right now) Blocked by DTR-2169
+       */
+      Then("We validate a spreadsheet to update 'fileStatus' from AWAITING_UPLOAD to VALIDATED")
+
       /** Checking data valid - GiftAid TODO: When we add more types of claims we would check all of them and add a
         * getter that gets the type
         */
       Then("We check now that Data Valid returns expected response body")
-      val dataValidResponse = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.postAPayloadObject(
         MockGetUploadResultData().getDataValidClaimId,
         MockGetUploadResultData().getDataValidReference,
         authToken
       )
 
       And("Response code should be 200")
-      dataValidResponse.status shouldBe 200
+      response.status shouldBe 200
 
       // TODO: This could become a method making testing all 4 DRY, could also check a few more fields
       And("The response body is what we expect")
-      (Json.parse(dataValidResponse.body) \ "reference")
-        .as[String]                                                           shouldEqual MockGetUploadResultData().getDataValidReference
-      (Json.parse(dataValidResponse.body) \ "validationType").asOpt[String]      shouldBe defined
-      (Json.parse(dataValidResponse.body) \ "fileStatus").as[String]          shouldEqual "VALIDATED"
-      (Json.parse(dataValidResponse.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "reference")
+        .as[String]                                                  shouldEqual MockGetUploadResultData().getDataValidReference
+      (Json.parse(response.body) \ "validationType").asOpt[String]      shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]          shouldEqual "VALIDATED"
+      (Json.parse(response.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
     }
 
     Scenario("Testing Invalid Data Response") {
@@ -269,24 +273,27 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         MockGetUploadResultData().getInvalidDataReference
       )
 
+      // Again TODO: we can't update to VERIFICATION_FAILED just yet
+      // Blocked by DTR-2169
+
       /** Checking invalid data - GiftAid */
       Then("We check now that Invalid Data returns expected response body")
-      val invalidDataResponse = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.postAPayloadObject(
         MockGetUploadResultData().getInvalidDataClaimId,
         MockGetUploadResultData().getInvalidDataReference,
         authToken
       )
 
       And("Response code should be 200")
-      invalidDataResponse.status shouldBe 200
+      response.status shouldBe 200
 
       And("The response body is what we expect")
-      (Json.parse(invalidDataResponse.body) \ "reference")
-        .as[String]                                                             shouldEqual MockGetUploadResultData().getInvalidDataReference
-      (Json.parse(invalidDataResponse.body) \ "validationType").asOpt[String]      shouldBe defined
-      (Json.parse(invalidDataResponse.body) \ "fileStatus").as[String]          shouldEqual "VALIDATION_FAILED"
-      (Json.parse(invalidDataResponse.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
-      (Json.parse(invalidDataResponse.body) \ "errors").asOpt[String]              shouldBe defined
+      (Json.parse(response.body) \ "reference")
+        .as[String]                                                  shouldEqual MockGetUploadResultData().getInvalidDataReference
+      (Json.parse(response.body) \ "validationType").asOpt[String]      shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]          shouldEqual "VALIDATION_FAILED"
+      (Json.parse(response.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "errors").asOpt[String]              shouldBe defined
     }
   }
 
