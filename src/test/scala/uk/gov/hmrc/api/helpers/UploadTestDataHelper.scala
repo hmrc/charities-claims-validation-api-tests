@@ -18,7 +18,7 @@ package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.ws.StandaloneWSResponse
-import uk.gov.hmrc.api.service.DeleteSingleUploadService
+import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
 
 import java.util.UUID
@@ -27,6 +27,7 @@ import scala.collection.mutable.ListBuffer
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 //  services used for seeding and cleanup
   val deleteSingleUploadService            = new DeleteSingleUploadService()
+  val deleteUploadsClaimService            = new DeleteUploadsClaimService()
 //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
