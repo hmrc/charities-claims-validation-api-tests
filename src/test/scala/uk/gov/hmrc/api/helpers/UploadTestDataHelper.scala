@@ -67,6 +67,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     response
   }
 
+
   override protected def afterEach(): Unit = {
     seeded.foreach { case (claimId, ref) =>
       try deleteSingleUploadService.deleteSingleUpload(claimId, ref, authHelper.bearerToken)
