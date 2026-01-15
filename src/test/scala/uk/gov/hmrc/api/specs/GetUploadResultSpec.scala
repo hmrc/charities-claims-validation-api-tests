@@ -1,7 +1,10 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.api.helpers.UploadTestDataHelper
+import play.api.libs.ws.StandaloneWSResponse
+import uk.gov.hmrc.api.helpers.FileStatus.{VALIDATED, VALIDATION_FAILED}
+import uk.gov.hmrc.api.helpers.ValidationType.GiftAid
+import uk.gov.hmrc.api.helpers.{FileStatus, UploadTestDataHelper, ValidationType}
 import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUpscanCallbackData, MockGetUploadResultData, MockUpdateUploadStatusData}
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
@@ -34,6 +37,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         .as[String]                                             shouldEqual MockGetUploadResultData().getAwaitingUploadReference
       (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
       (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "AWAITING_UPLOAD"
+      (Json.parse(response.body) \ "initiateTimestamp").asOpt[String]      shouldBe defined
       (Json.parse(response.body) \ "uploadUrl").asOpt[String]      shouldBe defined
     }
 
@@ -229,11 +233,32 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     Scenario("Testing Data Valid Response") {
       authToken
 
-      Then("Upload DataValid Test Data")
+      Then("Upload GiftAid DataValid Test Data")
       uploadTestDataCustomIdAndReferenceNoReturn(
         authToken,
-        MockGetUploadResultData().getDataValidClaimId,
-        MockGetUploadResultData().getDataValidReference
+        MockGetUploadResultData().getValidDataClaimIdGiftAid,
+        MockGetUploadResultData().getValidDataReferenceGiftAid
+      )
+
+      Then("Upload OtherIncome DataValid Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getValidDataClaimIdOtherIncome,
+        MockGetUploadResultData().getValidDataReferenceOtherIncome
+      )
+
+      Then("Upload ConnectedCharities DataValid Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getValidDataClaimIdConnectedCharities,
+        MockGetUploadResultData().getValidDataReferenceConnectedCharities
+      )
+
+      Then("Upload CommunityBuildings DataValid Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getValidDataClaimIdCommunityBuildings,
+        MockGetUploadResultData().getValidDataReferenceCommunityBuildings
       )
 
       /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become "VALIDATED"
@@ -241,59 +266,99 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
        */
       Then("We validate a spreadsheet to update 'fileStatus' from AWAITING_UPLOAD to VALIDATED")
 
-      /** Checking data valid - GiftAid TODO: When we add more types of claims we would check all of them and add a
-        * getter that gets the type
-        */
+      /** Checking data valid - GiftAid, OtherIncome, ConnectedCharities and CommunityBuildings */
       Then("We check now that Data Valid returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
-        MockGetUploadResultData().getDataValidClaimId,
-        MockGetUploadResultData().getDataValidReference,
+      val giftAidResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getValidDataClaimIdGiftAid,
+        MockGetUploadResultData().getValidDataReferenceGiftAid,
         authToken
       )
 
-      And("Response code should be 200")
-      response.status shouldBe 200
+      val otherIncomeResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getValidDataClaimIdOtherIncome,
+        MockGetUploadResultData().getValidDataReferenceOtherIncome,
+        authToken
+      )
 
-      // TODO: This could become a method making testing all 4 DRY, could also check a few more fields
-      And("The response body is what we expect")
-      (Json.parse(response.body) \ "reference")
-        .as[String]                                                  shouldEqual MockGetUploadResultData().getDataValidReference
-      (Json.parse(response.body) \ "validationType").asOpt[String]      shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]          shouldEqual "VALIDATED"
-      (Json.parse(response.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
+      val connectedCharitiesResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getValidDataClaimIdConnectedCharities,
+        MockGetUploadResultData().getValidDataReferenceConnectedCharities,
+        authToken
+      )
+
+      val communityBuildingResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getValidDataClaimIdCommunityBuildings,
+        MockGetUploadResultData().getValidDataReferenceCommunityBuildings,
+        authToken
+      )
+
+      checkDataResponse(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
+      checkDataResponse(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATED)
+      checkDataResponse(connectedCharitiesResponse, ValidationType.ConnectedCharities, FileStatus.VALIDATED)
+      checkDataResponse(communityBuildingResponse, ValidationType.CommunityBuildings, FileStatus.VALIDATED)
     }
 
     Scenario("Testing Invalid Data Response") {
       authToken
 
-      Then("Upload InvalidData Test Data")
+      Then("Upload GiftAid InvalidData Test Data")
       uploadTestDataCustomIdAndReferenceNoReturn(
         authToken,
-        MockGetUploadResultData().getInvalidDataClaimId,
-        MockGetUploadResultData().getInvalidDataReference
+        MockGetUploadResultData().getInvalidDataClaimIdGiftAid,
+        MockGetUploadResultData().getInvalidDataReferenceGiftAid
       )
 
-      // Again TODO: we can't update to VERIFICATION_FAILED just yet
-      // Blocked by DTR-2169
+      Then("Upload OtherIncome InvalidData Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getInvalidDataClaimIdOtherIncome,
+        MockGetUploadResultData().getInvalidDataReferenceOtherIncome
+      )
 
-      /** Checking invalid data - GiftAid */
-      Then("We check now that Invalid Data returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
-        MockGetUploadResultData().getInvalidDataClaimId,
-        MockGetUploadResultData().getInvalidDataReference,
+      Then("Upload ConnectedCharities InvalidData Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getInvalidDataClaimIdConnectedCharities,
+        MockGetUploadResultData().getInvalidDataReferenceConnectedCharities
+      )
+
+      Then("Upload CommunityBuilding InvalidData Test Data")
+      uploadTestDataCustomIdAndReferenceNoReturn(
+        authToken,
+        MockGetUploadResultData().getInvalidDataClaimIdCommunityBuildings,
+        MockGetUploadResultData().getInvalidDataReferenceCommunityBuildings
+      )
+
+      // Again TODO: we can't update to VERIFICATION_FAILED just yet --- Blocked by DTR-2169
+
+      val giftAidResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getInvalidDataClaimIdGiftAid,
+        MockGetUploadResultData().getInvalidDataReferenceGiftAid,
         authToken
       )
 
-      And("Response code should be 200")
-      response.status shouldBe 200
+      val otherIncomeResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getInvalidDataClaimIdOtherIncome,
+        MockGetUploadResultData().getInvalidDataReferenceOtherIncome,
+        authToken
+      )
 
-      And("The response body is what we expect")
-      (Json.parse(response.body) \ "reference")
-        .as[String]                                                  shouldEqual MockGetUploadResultData().getInvalidDataReference
-      (Json.parse(response.body) \ "validationType").asOpt[String]      shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]          shouldEqual "VALIDATION_FAILED"
-      (Json.parse(response.body) \ "giftAidScheduleData").asOpt[String] shouldBe defined
-      (Json.parse(response.body) \ "errors").asOpt[String]              shouldBe defined
+      val connectedCharitiesResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getInvalidDataClaimIdConnectedCharities,
+        MockGetUploadResultData().getInvalidDataReferenceConnectedCharities,
+        authToken
+      )
+
+      val communityBuildingResponse = getUploadResultService.postAPayloadObject(
+        MockGetUploadResultData().getInvalidDataClaimIdCommunityBuildings,
+        MockGetUploadResultData().getInvalidDataReferenceCommunityBuildings,
+        authToken
+      )
+
+      checkDataResponse(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATION_FAILED)
+      checkDataResponse(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATION_FAILED)
+      checkDataResponse(connectedCharitiesResponse, ValidationType.ConnectedCharities, FileStatus.VALIDATION_FAILED)
+      checkDataResponse(communityBuildingResponse, ValidationType.CommunityBuildings, FileStatus.VALIDATION_FAILED)
     }
   }
 
@@ -401,5 +466,26 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_HAS_EXPIRED"
       (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
     }
+  }
+
+  /** Valid and Invalid Data response both share a chunk of common responses, populating here to keep code DRY
+   * and declutter the scenario(s) */
+  def checkDataResponse(response: StandaloneWSResponse, validationType: ValidationType, fileStatus: FileStatus): Unit = {
+    val reference = MockGetUploadResultData().getCorrectReference(validationType, fileStatus)
+    val typeOfData = MockGetUploadResultData().getCorrectJsonBodyFieldName(validationType)
+
+    Then(s"The response for $validationType and data is $fileStatus is what we expect")
+    (Json.parse(response.body) \ "reference").as[String] shouldEqual reference
+    (Json.parse(response.body) \ "validationType").asOpt[String] shouldEqual validationType.toString
+    (Json.parse(response.body) \ "fileStatus").as[String] should(be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
+    (Json.parse(response.body) \ typeOfData).asOpt[String] shouldBe defined
+
+    if(fileStatus == VALIDATION_FAILED) {
+      And("We have invalid data so an additional check for errors")
+      (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
+    }
+
+    And("Response code should be 200")
+    response.status shouldBe 200
   }
 }

@@ -1,0 +1,4 @@
+package uk.gov.hmrc.api.helpers
+
+enum FileStatus:
+  case AWAITING_UPLOAD, VERIFYING, VERIFICATION_FAILED, VALIDATING, VALIDATED, VALIDATION_FAILED

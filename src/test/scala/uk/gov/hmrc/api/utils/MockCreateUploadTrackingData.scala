@@ -16,11 +16,8 @@
 
 package uk.gov.hmrc.api.utils
 
+import uk.gov.hmrc.api.helpers.ValidationType
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
-
-// The only valid types we are expecting for validationType in our payload
-enum ValidationType:
-  case GiftAid, OtherIncome, CommunityBuildings, ConnectedCharities
 
 object MockCreateUploadTrackingData {
   // Used to differentiate documents in the DB to understand which API call created them
