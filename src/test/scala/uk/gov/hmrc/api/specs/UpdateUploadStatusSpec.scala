@@ -17,9 +17,10 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.utils.{BaseSpec, MockUpdateUploadStatusData}
+import uk.gov.hmrc.api.data.MockUpdateUploadStatusData
 
 class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Update Upload Status API - E2E") {

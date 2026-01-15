@@ -2,10 +2,9 @@ package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
-import uk.gov.hmrc.api.helpers.FileStatus.{VALIDATED, VALIDATION_FAILED}
-import uk.gov.hmrc.api.helpers.ValidationType.GiftAid
+import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.{FileStatus, UploadTestDataHelper, ValidationType}
-import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUpscanCallbackData, MockGetUploadResultData, MockUpdateUploadStatusData}
+import uk.gov.hmrc.api.data.{MockCreateUpscanCallbackData, MockGetUploadResultData, MockUpdateUploadStatusData}
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Get Upload Result API - All successful response bodies") {
@@ -362,7 +361,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     }
   }
 
-  // TODO: Could make this more DRY
   Feature("Charities - Get Upload Result API - Failed Response Bodies") {
     Scenario("Request reference for given claimID is not found") {
       authToken
@@ -382,12 +380,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      And("Response code should be 404")
-      response.status shouldBe 404
-
-      And("The response body is what we expect ")
-      (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+      checkErrorResponse(response)
     }
 
     Scenario("Request claimID is not found") {
@@ -408,12 +401,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      And("Response code should be 404")
-      response.status shouldBe 404
-
-      And("The response body is what we expect ")
-      (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+      checkErrorResponse(response)
     }
 
     Scenario("Request claimID and reference not found") {
@@ -434,12 +422,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      And("Response code should be 404")
-      response.status shouldBe 404
-
-      And("The response body is what we expect ")
-      (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+      checkErrorResponse(response)
     }
 
     Scenario("Claim has expired") {
@@ -459,6 +442,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
+      // TODO: Could also break this down into error response method
       And("Response code should be 400")
       response.status shouldBe 400
 
@@ -480,12 +464,23 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     (Json.parse(response.body) \ "fileStatus").as[String] should(be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
     (Json.parse(response.body) \ typeOfData).asOpt[String] shouldBe defined
 
-    if(fileStatus == VALIDATION_FAILED) {
+    if(fileStatus == FileStatus.VALIDATION_FAILED) {
       And("We have invalid data so an additional check for errors")
       (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
     }
 
     And("Response code should be 200")
     response.status shouldBe 200
+  }
+
+  /** Invalid claimID, invalid reference and invalid claimID + reference all have the same response body
+   *  breaking that up and putting into a method to keep code DRY */
+  def checkErrorResponse(response: StandaloneWSResponse): Unit = {
+    And("Response code should be 404")
+    response.status shouldBe 404
+
+    And("The response body is what we expect ")
+    (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+    (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
   }
 }

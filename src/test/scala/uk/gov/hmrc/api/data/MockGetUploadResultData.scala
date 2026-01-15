@@ -1,4 +1,4 @@
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.data
 
 import uk.gov.hmrc.api.helpers.FileStatus.VALIDATED
 import uk.gov.hmrc.api.helpers.{FileStatus, ValidationType}

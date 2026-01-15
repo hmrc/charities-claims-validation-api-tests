@@ -18,9 +18,10 @@ package uk.gov.hmrc.api.specs
 
 import org.scalactic.Prettifier.default
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
+import uk.gov.hmrc.api.data.MockCreateUploadTrackingData
 
 class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upload Tracking API - E2E") {

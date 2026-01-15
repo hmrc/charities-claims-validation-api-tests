@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api.data
 
 import uk.gov.hmrc.api.helpers.ValidationType
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
