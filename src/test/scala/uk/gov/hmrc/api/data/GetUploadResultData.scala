@@ -1,6 +1,21 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.api.data
 
-import uk.gov.hmrc.api.helpers.FileStatus.VALIDATED
 import uk.gov.hmrc.api.helpers.{FileStatus, ValidationType}
 
 class GetUploadResultData {
@@ -49,21 +64,25 @@ class GetUploadResultData {
         fileStatus match
           case FileStatus.VALIDATED         => getValidDataReferenceGiftAid
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceGiftAid
+          case _                            => ""
 
       case ValidationType.OtherIncome =>
         fileStatus match
           case FileStatus.VALIDATED         => getValidDataReferenceOtherIncome
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceOtherIncome
+          case _                            => ""
 
       case ValidationType.ConnectedCharities =>
         fileStatus match
           case FileStatus.VALIDATED         => getValidDataReferenceConnectedCharities
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceConnectedCharities
+          case _                            => ""
 
       case ValidationType.CommunityBuildings =>
         fileStatus match
           case FileStatus.VALIDATED         => getValidDataReferenceCommunityBuildings
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceCommunityBuildings
+          case _                            => ""
 
   // Get the name of the field in the response body for Valid and Invalid Data, we only know this at runtime
   def getCorrectJsonBodyFieldName(validationType: ValidationType): String =
