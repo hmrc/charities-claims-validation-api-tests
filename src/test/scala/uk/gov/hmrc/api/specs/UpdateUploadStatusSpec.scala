@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.data.MockUpdateUploadStatusData
+import uk.gov.hmrc.api.data.UpdateUploadStatusData
 
 class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Update Upload Status API - E2E") {
@@ -31,18 +31,18 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
       val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
         authToken,
-        MockUpdateUploadStatusData.getValidClaimId,
-        MockUpdateUploadStatusData.getValidReference
+        UpdateUploadStatusData.getValidClaimId,
+        UpdateUploadStatusData.getValidReference
       )
 
       Then("A 201 status code should be returned")
       sendingTestDataResponse.status shouldBe 201
 
       And("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
-      val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
+      val payload  = UpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimId,
-        MockUpdateUploadStatusData.getValidReference,
+        UpdateUploadStatusData.getValidClaimId,
+        UpdateUploadStatusData.getValidReference,
         payload,
         authHelper.bearerToken
       )
@@ -62,18 +62,18 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
 
       val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
         authToken,
-        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus
+        UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+        UpdateUploadStatusData.getValidReferenceDifferentFileStatus
       )
 
       Then("A 201 status code should be returned")
       sendingTestDataResponse.status shouldBe 201
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
-      val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
+      val payload  = UpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        MockUpdateUploadStatusData.getValidReferenceDifferentFileStatus,
+        UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+        UpdateUploadStatusData.getValidReferenceDifferentFileStatus,
         payload,
         authHelper.bearerToken
       )
@@ -90,10 +90,10 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID is not valid")
-      val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
+      val payload  = UpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getInvalidClaimId,
-        MockUpdateUploadStatusData.getValidReference,
+        UpdateUploadStatusData.getInvalidClaimId,
+        UpdateUploadStatusData.getValidReference,
         payload,
         authHelper.bearerToken
       )
@@ -116,10 +116,10 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and reference is not valid")
-      val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
+      val payload  = UpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimId,
-        MockUpdateUploadStatusData.getInvalidReference,
+        UpdateUploadStatusData.getValidClaimId,
+        UpdateUploadStatusData.getInvalidReference,
         payload,
         authHelper.bearerToken
       )
@@ -142,10 +142,10 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request where claimID and reference is not valid")
-      val payload  = MockUpdateUploadStatusData.getSuccessfulPayload
+      val payload  = UpdateUploadStatusData.getSuccessfulPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getInvalidClaimId,
-        MockUpdateUploadStatusData.getInvalidReference,
+        UpdateUploadStatusData.getInvalidClaimId,
+        UpdateUploadStatusData.getInvalidReference,
         payload,
         authHelper.bearerToken
       )
@@ -168,10 +168,10 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The UpdateUploadStatus Endpoint is sent an valid PUT Request where fileStatus is incorrect")
-      val payload  = MockUpdateUploadStatusData.getInvalidFileStatusPayload
+      val payload  = UpdateUploadStatusData.getInvalidFileStatusPayload
       val response = updateUploadStatusService.postAPayloadObject(
-        MockUpdateUploadStatusData.getValidClaimId,
-        MockUpdateUploadStatusData.getValidReference,
+        UpdateUploadStatusData.getValidClaimId,
+        UpdateUploadStatusData.getValidReference,
         payload,
         authHelper.bearerToken
       )

@@ -3,7 +3,7 @@ package uk.gov.hmrc.api.data
 import uk.gov.hmrc.api.helpers.FileStatus.VALIDATED
 import uk.gov.hmrc.api.helpers.{FileStatus, ValidationType}
 
-class MockGetUploadResultData {
+class GetUploadResultData {
 
   /** Simply a class to hold pre-determined claimIDs and references to test all edge cases to ensure GetUploadResult API
     * works as intended We need to retrieve multiple individual claim(s) so storing all identifiers in one place to
@@ -49,23 +49,23 @@ class MockGetUploadResultData {
         fileStatus match
           case FileStatus.VALIDATED => getValidDataReferenceGiftAid
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceGiftAid
-      
-      case ValidationType.OtherIncome => 
+
+      case ValidationType.OtherIncome =>
         fileStatus match
           case FileStatus.VALIDATED => getValidDataReferenceOtherIncome
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceOtherIncome
-      
+
       case ValidationType.ConnectedCharities =>
         fileStatus match
           case FileStatus.VALIDATED => getValidDataReferenceConnectedCharities
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceConnectedCharities
-      
+
       case ValidationType.CommunityBuildings =>
         fileStatus match
           case FileStatus.VALIDATED => getValidDataReferenceCommunityBuildings
           case FileStatus.VALIDATION_FAILED => getInvalidDataReferenceCommunityBuildings
   }
-  
+
   // Get the name of the field in the response body for Valid and Invalid Data, we only know this at runtime
   def getCorrectJsonBodyFieldName(validationType: ValidationType): String = {
     validationType match

@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.data
 import uk.gov.hmrc.api.helpers.ValidationType
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
 
-object MockCreateUploadTrackingData {
+object CreateUploadTrackingData {
   // Used to differentiate documents in the DB to understand which API call created them
   private val API_NAME: String = "Create-Upload-Tracking"
 

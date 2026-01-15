@@ -18,7 +18,7 @@ package uk.gov.hmrc.api.data
 
 import uk.gov.hmrc.api.models.{CreateUpscanCallbackFailedPayload, CreateUpscanCallbackSuccessfulPayload, FailureDetailsUpscanCallback, UploadDetailsUpscanCallback}
 
-object MockCreateUpscanCallbackData {
+object CreateUpscanCallbackData {
 
   /** API_NAME is responsible for appending itself to claimId and reference so we know what documents stored in the DB
     * are associated to an API call that created / or called our services. The next few constants we use for
@@ -46,7 +46,7 @@ object MockCreateUpscanCallbackData {
   /** A valid Payload that should return a SUCCESS response, again providing some default values */
   def getSuccessfulCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload =
     CreateUpscanCallbackSuccessfulPayload(
-      reference = MockCreateUploadTrackingData.getValidReference,
+      reference = CreateUploadTrackingData.getValidReference,
       downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
       fileStatus = FILE_STATUS_READY,
       uploadDetails = commonUploadDetailsUpscanCallback
@@ -67,7 +67,7 @@ object MockCreateUpscanCallbackData {
   /** A valid Payload that should return a 404 response as the reference does not exist */
   def getInvalidReferenceCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload =
     CreateUpscanCallbackSuccessfulPayload(
-      reference = MockCreateUploadTrackingData.getInvalidReference,
+      reference = CreateUploadTrackingData.getInvalidReference,
       downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
       fileStatus = FILE_STATUS_READY,
       uploadDetails = commonUploadDetailsUpscanCallback

@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.data.MockCreateUploadTrackingData
+import uk.gov.hmrc.api.data.CreateUploadTrackingData
 
 class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upload Tracking API - E2E") {
@@ -46,10 +46,10 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
+      val payload  = CreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
       val response =
         createUploadTrackingService.postAPayloadObject(
-          MockCreateUploadTrackingData.getInvalidClaimId,
+          CreateUploadTrackingData.getInvalidClaimId,
           payload,
           authToken
         )
@@ -67,7 +67,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
 
       When("The CreateUploadTracking Endpoint is sent an incomplete POST Request")
       val response =
-        createUploadTrackingService.postInvalidJSON(MockCreateUploadTrackingData.getValidClaimId, authToken)
+        createUploadTrackingService.postInvalidJSON(CreateUploadTrackingData.getValidClaimId, authToken)
 
       Then("A 400 status code should be returned due to missing required information")
       response.status shouldBe 400
