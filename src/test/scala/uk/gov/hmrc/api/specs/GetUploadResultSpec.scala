@@ -33,11 +33,11 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       And("The response body is what we expect")
       (Json.parse(response.body) \ "reference")
-        .as[String]                                             shouldEqual GetUploadResultData().getAwaitingUploadReference
-      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "AWAITING_UPLOAD"
-      (Json.parse(response.body) \ "initiateTimestamp").asOpt[String]      shouldBe defined
-      (Json.parse(response.body) \ "uploadUrl").asOpt[String]      shouldBe defined
+        .as[String]                                                shouldEqual GetUploadResultData().getAwaitingUploadReference
+      (Json.parse(response.body) \ "validationType").asOpt[String]    shouldBe defined
+      (Json.parse(response.body) \ "fileStatus").as[String]        shouldEqual "AWAITING_UPLOAD"
+      (Json.parse(response.body) \ "initiateTimestamp").asOpt[String] shouldBe defined
+      (Json.parse(response.body) \ "uploadUrl").asOpt[String]         shouldBe defined
     }
 
     Scenario("Testing Verifying Response") {
@@ -260,9 +260,9 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         GetUploadResultData().getValidDataReferenceCommunityBuildings
       )
 
-      /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become "VALIDATED"
-       * TODO: For this we need to have the file validated (can't do this right now) Blocked by DTR-2169
-       */
+      /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become
+        * "VALIDATED" TODO: For this we need to have the file validated (can't do this right now) Blocked by DTR-2169
+        */
       Then("We validate a spreadsheet to update 'fileStatus' from AWAITING_UPLOAD to VALIDATED")
 
       /** Checking data valid - GiftAid, OtherIncome, ConnectedCharities and CommunityBuildings */
@@ -452,19 +452,25 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     }
   }
 
-  /** Valid and Invalid Data response both share a chunk of common responses, populating here to keep code DRY
-   * and declutter the scenario(s) */
-  def checkDataResponse(response: StandaloneWSResponse, validationType: ValidationType, fileStatus: FileStatus): Unit = {
-    val reference = GetUploadResultData().getCorrectReference(validationType, fileStatus)
+  /** Valid and Invalid Data response both share a chunk of common responses, populating here to keep code DRY and
+    * declutter the scenario(s)
+    */
+  def checkDataResponse(
+    response: StandaloneWSResponse,
+    validationType: ValidationType,
+    fileStatus: FileStatus
+  ): Unit = {
+    val reference  = GetUploadResultData().getCorrectReference(validationType, fileStatus)
     val typeOfData = GetUploadResultData().getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
-    (Json.parse(response.body) \ "reference").as[String] shouldEqual reference
+    (Json.parse(response.body) \ "reference").as[String]         shouldEqual reference
     (Json.parse(response.body) \ "validationType").asOpt[String] shouldEqual validationType.toString
-    (Json.parse(response.body) \ "fileStatus").as[String] should(be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
-    (Json.parse(response.body) \ typeOfData).asOpt[String] shouldBe defined
+    (Json.parse(response.body) \ "fileStatus")
+      .as[String]                                                     should (be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
+    (Json.parse(response.body) \ typeOfData).asOpt[String]          shouldBe defined
 
-    if(fileStatus == FileStatus.VALIDATION_FAILED) {
+    if (fileStatus == FileStatus.VALIDATION_FAILED) {
       And("We have invalid data so an additional check for errors")
       (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
     }
@@ -473,14 +479,15 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     response.status shouldBe 200
   }
 
-  /** Invalid claimID, invalid reference and invalid claimID + reference all have the same response body
-   *  breaking that up and putting into a method to keep code DRY */
+  /** Invalid claimID, invalid reference and invalid claimID + reference all have the same response body breaking that
+    * up and putting into a method to keep code DRY
+    */
   def checkErrorResponse(response: StandaloneWSResponse): Unit = {
     And("Response code should be 404")
     response.status shouldBe 404
 
     And("The response body is what we expect ")
-    (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+    (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
     (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
   }
 }
