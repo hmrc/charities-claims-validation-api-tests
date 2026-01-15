@@ -1,6 +1,17 @@
 # charities-claims-validation-api-tests
 
-API test suite for `charities-claims-validation` service.
+API test suite for `charities-claims-validation` service. 
+
+The endpoints and respective request types covered are:
+
+| Endpoints              | Request type |
+|------------------------|:------------:|
+| Create Upload Tracking |     POST     |     
+| Upscan Callback        |     POST     |
+| Delete Single Upload   |    DELETE    |
+| Delete Upload          |    DELETE    |
+| Update Upload Status   |     PUT      |
+
 
 ## Pre-requisites
 Ensure to have:
