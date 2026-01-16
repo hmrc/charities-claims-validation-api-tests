@@ -30,13 +30,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val response = uploadDefaultTestData(authToken)
-
-      Then("A 201 status code should be returned")
-      response.status shouldBe 201
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      uploadTestData(authToken)
     }
   }
 
@@ -80,17 +74,14 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
       Given("There is an Auth Token and it's valid")
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
-      When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val firstResponse = uploadDefaultTestData(authToken)
-      Then("A 201 response code is returned as the claim is initially added to the DB")
-      firstResponse.status shouldBe 201
-      val response = uploadDefaultTestData(authToken)
+      When(
+        "The CreateUploadTracking Endpoint is sent a valid POST Request" +
+          "A 201 response code is returned as the claim is initially added to the DB"
+      )
+      uploadTestData(authToken)
 
-      And("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
-      response.status shouldBe 500
-
-      And("The response body is { success: false }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+      Then("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
+      uploadTestData(authToken, responseCode = 500, responseSuccess = false)
     }
   }
 }

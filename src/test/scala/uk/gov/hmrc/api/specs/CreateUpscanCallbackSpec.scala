@@ -30,13 +30,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
 
       // First need to send a document to the DB
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
-      val response = uploadDefaultTestData(authToken)
-
-      Then("A 201 status code should be returned from CreateUploadTrackingSpec")
-      response.status shouldBe 201
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      uploadTestData(authToken)
 
       Then("The CreateUpscanCallback Endpoint is sent a valid POST Request")
       val payload        = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
