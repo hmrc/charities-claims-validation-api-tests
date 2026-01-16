@@ -32,6 +32,8 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val createUpscanService: CreateUpscanCallbackService         = new CreateUpscanCallbackService
   val updateUploadStatusService: UpdateUploadStatusService     = new UpdateUploadStatusService
   val getUploadResultService: GetUploadResultService           = new GetUploadResultService
+  val deleteSingleUploadService                                = new DeleteSingleUploadService
+  val deleteUploadsClaimService                                = new DeleteUploadsClaimService
 
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {

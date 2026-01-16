@@ -18,7 +18,6 @@ package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
@@ -27,10 +26,7 @@ import scala.collection.mutable.ListBuffer
   * completes so we can run the test in automation without any interference / extra work / DB cleanup
   */
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
-//  services used for seeding and cleanup
-  val deleteSingleUploadService            = new DeleteSingleUploadService()
-  val deleteUploadsClaimService            = new DeleteUploadsClaimService()
-//  Store everything created for easy cleanup
+  //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
   /** Upload the data to the DB with a random reference, in this scenario we only care about the ID. We return a random
