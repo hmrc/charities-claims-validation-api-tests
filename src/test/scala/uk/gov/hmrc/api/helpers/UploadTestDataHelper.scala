@@ -41,11 +41,6 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     ref
   }
 
-  /** Similar to seedUploadTestData(), however we want more functionality over the data getting stored into the
-    * database. Making our use cases more flexible as we have more control over claimID, reference and validationType
-    * that will be stored in DB allowing us to write flexible specs and even test all endpoints more accurately and
-    * easily. We should be able to use this method with some default test data otherwise override as needed
-    */
   def uploadTestData(
     authToken: String,
     claimId: String = CreateUploadTrackingData.getValidClaimId,

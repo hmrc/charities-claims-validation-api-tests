@@ -16,47 +16,26 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
 import uk.gov.hmrc.api.BaseSpec
-
-// Happy Paths
+import uk.gov.hmrc.api.data.DeleteUploadData
 
 class DeleteUploadsSpec extends BaseSpec with UploadTestDataHelper {
 
   Feature("Delete Upload Claim API") {
-
     Scenario("Delete a claim", E2ETest) {
       Given("There is a valid AUTH Token")
       authToken
 
-      When("A valid claimId ")
-      val claimId = "claim-345"
-      seedUploadTestData(claimId, authToken)
+      When("We upload the test data")
+      uploadTestData(authToken, DeleteUploadData.getValidClaimId)
 
       When("I send DELETE request to the Endpoint")
-      val response = deleteUploadsClaimService.deleteUploads(claimId = claimId, authorizationHeaderValue = authToken)
+      val response = deleteUploadsClaimService.deleteUploads(DeleteUploadData.getValidClaimId, authToken)
 
-      Then("A 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      Then("A 200 status code should be returned with a { success: true } body")
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
-
   }
-
-//  Feature("Charities - Create Delete Upload API - Multi Delete") {
-//    Scenario("Successfully delete a charity claim") {
-//      When("The DeleteSingleUpload(s) Endpoint is sent a valid DELETE Request")
-//      val response = deleteSingleUploadService.deleteManyRequest("claim-123")
-//
-//      Then("A 204 status code should be returned")
-//      response.status shouldBe 204
-//
-//      And("The response body is { success: true }")
-//      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
-//    }
-//  }
 }
