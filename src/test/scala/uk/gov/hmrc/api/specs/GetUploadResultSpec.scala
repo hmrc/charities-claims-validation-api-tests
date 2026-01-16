@@ -19,8 +19,9 @@ package uk.gov.hmrc.api.specs
 import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.helpers.{FileStatus, UploadTestDataHelper, ValidationType}
+import uk.gov.hmrc.api.helpers.{FailureReason, FileStatus, UploadTestDataHelper, ValidationType}
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadResultData, UpdateUploadStatusData}
+import uk.gov.hmrc.api.helpers.ValidationType.GiftAid
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Get Upload Result API - All successful response bodies") {
@@ -45,16 +46,14 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      response.status shouldBe 200
+      checkStatusCode(response, 200)
 
-      // TODO: Ref, val, file return in all response bodies, could make DRY?
-      And("The response body is what we expect")
-      (Json.parse(response.body) \ "reference")
-        .as[String]                                                shouldEqual GetUploadResultData().getAwaitingUploadReference
-      (Json.parse(response.body) \ "validationType").asOpt[String]    shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]        shouldEqual "AWAITING_UPLOAD"
-      (Json.parse(response.body) \ "initiateTimestamp").asOpt[String] shouldBe defined
-      (Json.parse(response.body) \ "uploadUrl").asOpt[String]         shouldBe defined
+      checkCommonResponseBodies(
+        response,
+        GetUploadResultData().getAwaitingUploadReference,
+        ValidationType.GiftAid,
+        FileStatus.AWAITING_UPLOAD
+      )
     }
 
     Scenario("Testing Verifying Response") {
@@ -87,13 +86,14 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      response.status shouldBe 200
+      checkStatusCode(response, 200)
 
-      And("The response body is what we expect")
-      (Json.parse(response.body) \ "reference")
-        .as[String]                                             shouldEqual GetUploadResultData().getVerifyingReference
-      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "VERIFYING"
+      checkCommonResponseBodies(
+        response,
+        GetUploadResultData().getVerifyingReference,
+        ValidationType.GiftAid,
+        FileStatus.VERIFYING
+      )
     }
 
     Scenario("Testing VERIFICATION_FAILED response body") {
@@ -160,15 +160,16 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      quarantineResponse.status shouldBe 200
+      checkStatusCode(quarantineResponse, 200)
 
       And("The response body is what we expect")
-      (Json.parse(quarantineResponse.body) \ "reference")
-        .as[String]                                                                         shouldEqual GetUploadResultData().getQuarantineReference
-      (Json.parse(quarantineResponse.body) \ "validationType").asOpt[String]                   shouldBe defined
-      (Json.parse(quarantineResponse.body) \ "fileStatus").as[String]                       shouldEqual "VERIFICATION_FAILED"
-      (Json.parse(quarantineResponse.body) \ "failureDetails" \ "failureReason").as[String] shouldEqual "QUARANTINE"
-      (Json.parse(quarantineResponse.body) \ "failureDetails" \ "message").asOpt[String]       shouldBe defined
+      checkCommonResponseBodies(
+        quarantineResponse,
+        GetUploadResultData().getQuarantineReference,
+        ValidationType.GiftAid,
+        FileStatus.VERIFICATION_FAILED,
+        failureReason = FailureReason.QUARANTINE
+      )
 
       Then("We call GetUploadResult to check REJECTED")
       val rejectedResponse = getUploadResultService.postAPayloadObject(
@@ -178,15 +179,16 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      rejectedResponse.status shouldBe 200
+      checkStatusCode(rejectedResponse, 200)
 
       And("The response body is what we expect")
-      (Json.parse(rejectedResponse.body) \ "reference")
-        .as[String]                                                                       shouldEqual GetUploadResultData().getRejectedReference
-      (Json.parse(rejectedResponse.body) \ "validationType").asOpt[String]                   shouldBe defined
-      (Json.parse(rejectedResponse.body) \ "fileStatus").as[String]                       shouldEqual "VERIFICATION_FAILED"
-      (Json.parse(rejectedResponse.body) \ "failureDetails" \ "failureReason").as[String] shouldEqual "REJECTED"
-      (Json.parse(rejectedResponse.body) \ "failureDetails" \ "message").asOpt[String]       shouldBe defined
+      checkCommonResponseBodies(
+        rejectedResponse,
+        GetUploadResultData().getRejectedReference,
+        ValidationType.GiftAid,
+        FileStatus.VERIFICATION_FAILED,
+        failureReason = FailureReason.REJECTED
+      )
 
       Then("We call GetUploadResult to check UNKNOWN")
       val unknownResponse = getUploadResultService.postAPayloadObject(
@@ -196,15 +198,16 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      unknownResponse.status shouldBe 200
+      checkStatusCode(unknownResponse, 200)
 
       And("The response body is what we expect")
-      (Json.parse(unknownResponse.body) \ "reference")
-        .as[String]                                                                      shouldEqual GetUploadResultData().getUnknownReference
-      (Json.parse(unknownResponse.body) \ "validationType").asOpt[String]                   shouldBe defined
-      (Json.parse(unknownResponse.body) \ "fileStatus").as[String]                       shouldEqual "VERIFICATION_FAILED"
-      (Json.parse(unknownResponse.body) \ "failureDetails" \ "failureReason").as[String] shouldEqual "UNKNOWN"
-      (Json.parse(unknownResponse.body) \ "failureDetails" \ "message").asOpt[String]       shouldBe defined
+      checkCommonResponseBodies(
+        unknownResponse,
+        GetUploadResultData().getUnknownReference,
+        ValidationType.GiftAid,
+        FileStatus.VERIFICATION_FAILED,
+        failureReason = FailureReason.UNKNOWN
+      )
     }
 
     Scenario("Testing VALIDATING Response") {
@@ -237,13 +240,15 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       And("Response code should be 200")
-      response.status shouldBe 200
+      checkStatusCode(response, 200)
 
       And("The response body is what we expect")
-      (Json.parse(response.body) \ "reference")
-        .as[String]                                             shouldEqual GetUploadResultData().getValidatingReference
-      (Json.parse(response.body) \ "validationType").asOpt[String] shouldBe defined
-      (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual "VALIDATING"
+      checkCommonResponseBodies(
+        response,
+        GetUploadResultData().getValidatingReference,
+        ValidationType.GiftAid,
+        FileStatus.VALIDATING
+      )
     }
 
     Scenario("Testing Data Valid Response") {
@@ -308,10 +313,18 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      checkDataResponse(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
-      checkDataResponse(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATED)
-      checkDataResponse(connectedCharitiesResponse, ValidationType.ConnectedCharities, FileStatus.VALIDATED)
-      checkDataResponse(communityBuildingResponse, ValidationType.CommunityBuildings, FileStatus.VALIDATED)
+      checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
+      checkValidAndInvalidDataResponseBody(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATED)
+      checkValidAndInvalidDataResponseBody(
+        connectedCharitiesResponse,
+        ValidationType.ConnectedCharities,
+        FileStatus.VALIDATED
+      )
+      checkValidAndInvalidDataResponseBody(
+        communityBuildingResponse,
+        ValidationType.CommunityBuildings,
+        FileStatus.VALIDATED
+      )
     }
 
     Scenario("Testing Invalid Data Response") {
@@ -371,10 +384,22 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      checkDataResponse(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATION_FAILED)
-      checkDataResponse(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATION_FAILED)
-      checkDataResponse(connectedCharitiesResponse, ValidationType.ConnectedCharities, FileStatus.VALIDATION_FAILED)
-      checkDataResponse(communityBuildingResponse, ValidationType.CommunityBuildings, FileStatus.VALIDATION_FAILED)
+      checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATION_FAILED)
+      checkValidAndInvalidDataResponseBody(
+        otherIncomeResponse,
+        ValidationType.OtherIncome,
+        FileStatus.VALIDATION_FAILED
+      )
+      checkValidAndInvalidDataResponseBody(
+        connectedCharitiesResponse,
+        ValidationType.ConnectedCharities,
+        FileStatus.VALIDATION_FAILED
+      )
+      checkValidAndInvalidDataResponseBody(
+        communityBuildingResponse,
+        ValidationType.CommunityBuildings,
+        FileStatus.VALIDATION_FAILED
+      )
     }
   }
 
@@ -459,52 +484,8 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      // TODO: Could also break this down into error response method
-      And("Response code should be 400")
-      response.status shouldBe 400
-
-      And("The response body is what we expect ")
-      (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_HAS_EXPIRED"
-      (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
+      And("The response body and status code is what we expect")
+      checkErrorResponse(response, 400)
     }
-  }
-
-  /** Valid and Invalid Data response both share a chunk of common responses, populating here to keep code DRY and
-    * declutter the scenario(s)
-    */
-  def checkDataResponse(
-    response: StandaloneWSResponse,
-    validationType: ValidationType,
-    fileStatus: FileStatus
-  ): Unit = {
-    val reference  = GetUploadResultData().getCorrectReference(validationType, fileStatus)
-    val typeOfData = GetUploadResultData().getCorrectJsonBodyFieldName(validationType)
-
-    Then(s"The response for $validationType and data is $fileStatus is what we expect")
-    (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
-    (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
-    (Json.parse(response.body) \ "fileStatus")
-      .as[String]                                                  should (be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
-    (Json.parse(response.body) \ typeOfData).asOpt[String]       shouldBe defined
-
-    if (fileStatus == FileStatus.VALIDATION_FAILED) {
-      And("We have invalid data so an additional check for errors")
-      (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
-    }
-
-    And("Response code should be 200")
-    response.status shouldBe 200
-  }
-
-  /** Invalid claimID, invalid reference and invalid claimID + reference all have the same response body breaking that
-    * up and putting into a method to keep code DRY
-    */
-  def checkErrorResponse(response: StandaloneWSResponse): Unit = {
-    And("Response code should be 404")
-    response.status shouldBe 404
-
-    And("The response body is what we expect ")
-    (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-    (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
   }
 }

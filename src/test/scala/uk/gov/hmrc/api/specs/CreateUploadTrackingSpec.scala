@@ -49,10 +49,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
         )
 
       Then("A 400 as 'validationType' is incorrect status code should be returned")
-      response.status shouldBe 400
-
-      And("The response body is { success: false }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+      checkGenericResponseBodyAndStatusCode(response, responseCode = 400, responseSuccess = false)
     }
 
     Scenario("Incomplete Payload - User wants to upload a spreadsheet for charity claim(s)") {
@@ -64,10 +61,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
         createUploadTrackingService.postInvalidJSON(CreateUploadTrackingData.getValidClaimId, authToken)
 
       Then("A 400 status code should be returned due to missing required information")
-      response.status shouldBe 400
-
-      And("The response body is { success: false }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+      checkGenericResponseBodyAndStatusCode(response, responseCode = 400, responseSuccess = false)
     }
 
     Scenario("The 'validationType' is a duplicate for this claimID") {

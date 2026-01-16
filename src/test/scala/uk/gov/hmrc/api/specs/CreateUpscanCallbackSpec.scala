@@ -33,15 +33,15 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       uploadTestData(authToken)
 
       Then("The CreateUpscanCallback Endpoint is sent a valid POST Request")
-      val payload        = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
-      val upscanResponse = createUpscanService.postSuccessfulPayloadObject(
+      val payload  = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
+      val response = createUpscanService.postSuccessfulPayloadObject(
         CreateUploadTrackingData.getValidClaimId,
         payload,
         authHelper.bearerToken
       )
 
       Then("A 204 status code should be returned from UpscanCallback API")
-      upscanResponse.status shouldBe 204
+      checkStatusCode(response, 204)
     }
   }
 
@@ -67,7 +67,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("A 204 status code should be returned")
-      response.status shouldBe 204
+      checkStatusCode(response, 204)
     }
 
     Scenario("Receive a Request Body that is REJECTED") {
@@ -91,7 +91,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("A 204 status code should be returned")
-      response.status shouldBe 204
+      checkStatusCode(response, 204)
     }
 
     Scenario("Receive a Request Body that is UNKNOWN") {
@@ -114,8 +114,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
         authHelper.bearerToken
       )
 
-      Then("A 204 status code should be returned")
-      response.status shouldBe 204
+      checkStatusCode(response, 204)
     }
 
     Scenario("Send a successful payload with an invalid file type") {
@@ -131,7 +130,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("A 400 status code should be returned")
-      response.status shouldBe 400
+      checkStatusCode(response, 400)
     }
 
     Scenario("Send a successful payload with a reference that does not exist") {
@@ -147,7 +146,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
+      checkStatusCode(response, 404)
     }
   }
 }

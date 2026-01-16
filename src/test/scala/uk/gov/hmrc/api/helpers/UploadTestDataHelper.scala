@@ -18,7 +18,6 @@ package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
-import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
@@ -81,10 +80,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
       * we have the ability to assert the expected status code and body for these unique edge cases
       */
     Then(s"A $responseCode status code should be returned from uploadTestData, using: CreateUploadTracking API")
-    response.status shouldBe responseCode
-
-    And(s"The response body is { success: $responseSuccess }")
-    (Json.parse(response.body) \ "success").as[Boolean] shouldBe responseSuccess
+    checkGenericResponseBodyAndStatusCode(response, responseCode = responseCode, responseSuccess = responseSuccess)
   }
 
   override protected def afterEach(): Unit = {

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.api.data
 
+import uk.gov.hmrc.api.helpers.FailureReason
 import uk.gov.hmrc.api.models.{CreateUpscanCallbackFailedPayload, CreateUpscanCallbackSuccessfulPayload, FailureDetailsUpscanCallback, UploadDetailsUpscanCallback}
 
 object CreateUpscanCallbackData {
@@ -25,12 +26,9 @@ object CreateUpscanCallbackData {
     * 'fileStatus' and 'failureDetails' storing them here just to eliminate the potential of human error with mismatch
     * spelling etc., If any 'fileStatus' parameters are modified / added / removed simply change them here
     */
-  private val API_NAME: String                   = "Create-Upscan-Callback"
-  private val FAILURE_DETAILS_QUARANTINE: String = "QUARANTINE"
-  private val FAILURE_DETAILS_REJECTED: String   = "REJECTED"
-  private val FAILURE_DETAILS_UNKNOWN: String    = "UNKNOWN"
-  private val FILE_STATUS_READY: String          = "READY"
-  private val FILE_STATUS_FAILED: String         = "FAILED"
+  private val API_NAME: String           = "Create-Upscan-Callback"
+  private val FILE_STATUS_READY: String  = "READY"
+  private val FILE_STATUS_FAILED: String = "FAILED"
 
   /** Common data that is used for the UpscanCallback for successful and failure types of request(s). These default
     * values will be used for testing purposes
@@ -79,18 +77,18 @@ object CreateUpscanCallbackData {
     *   - UNKNOWN - There is another problem with the file
     */
   private def getQuarantinedFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
-    failureReason = FAILURE_DETAILS_QUARANTINE,
-    message = "e.g. This file has a virus"
+    failureReason = FailureReason.QUARANTINE.toString,
+    message = FailureReason.QUARANTINE.getFailureMessage
   )
 
   private def getRejectedFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
-    failureReason = FAILURE_DETAILS_REJECTED,
-    message = "MIME type $mime is not allowed for service $service-name"
+    failureReason = FailureReason.REJECTED.toString,
+    message = FailureReason.REJECTED.getFailureMessage
   )
 
   private def getUnknownFailureDetails: FailureDetailsUpscanCallback = FailureDetailsUpscanCallback(
-    failureReason = FAILURE_DETAILS_UNKNOWN,
-    message = "Something unknown happened"
+    failureReason = FailureReason.UNKNOWN.toString,
+    message = FailureReason.UNKNOWN.getFailureMessage
   )
 
   // No longer works if we want unique reference, come back and fix but for now doing the easy way
@@ -144,10 +142,10 @@ object CreateUpscanCallbackData {
     * These documents with the associated id / ref will be stored in the DB awaiting UpscanCallback to change the doc to
     * include each unique FailureType
     */
-  def getQuarantineClaimId: String = s"$API_NAME-$FAILURE_DETAILS_QUARANTINE-claim"
-  def getQuarantineRef: String     = s"$API_NAME-$FAILURE_DETAILS_QUARANTINE-ref"
-  def getRejectedClaimId: String   = s"$API_NAME-$FAILURE_DETAILS_REJECTED-claim"
-  def getRejectedRef: String       = s"$API_NAME-$FAILURE_DETAILS_REJECTED-ref"
-  def getUnknownClaimId: String    = s"$API_NAME-$FAILURE_DETAILS_UNKNOWN-claim"
-  def getUnknownRef: String        = s"$API_NAME-$FAILURE_DETAILS_UNKNOWN-ref"
+  def getQuarantineClaimId: String = s"$API_NAME-${FailureReason.QUARANTINE.toString}-claim"
+  def getQuarantineRef: String     = s"$API_NAME-${FailureReason.QUARANTINE.toString}-ref"
+  def getRejectedClaimId: String   = s"$API_NAME-${FailureReason.REJECTED.toString}-claim"
+  def getRejectedRef: String       = s"$API_NAME-${FailureReason.REJECTED.toString}-ref"
+  def getUnknownClaimId: String    = s"$API_NAME-${FailureReason.UNKNOWN.toString}-claim"
+  def getUnknownRef: String        = s"$API_NAME-${FailureReason.UNKNOWN.toString}-ref"
 }
