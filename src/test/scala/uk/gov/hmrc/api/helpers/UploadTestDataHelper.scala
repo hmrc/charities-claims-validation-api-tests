@@ -20,7 +20,7 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.service.DeleteSingleUploadService
+import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
 
 import java.util.UUID
