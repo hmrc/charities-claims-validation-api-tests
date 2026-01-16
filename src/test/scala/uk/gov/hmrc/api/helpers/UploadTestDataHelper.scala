@@ -65,7 +65,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
       validationType.toString
     )
     val response = createUploadTrackingService.postAPayloadObject(
-      CreateUploadTrackingData.getValidClaimId,
+      claimId,
       payload,
       authToken
     )
@@ -102,29 +102,6 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 
     seeded += ((claimId, reference))
     response
-  }
-
-  // TODO: This will be removed in refactoring of this class but for now same behaviour as class above
-  // but will not be returning a response just to keep the GetUploadResultSpec cleaner
-  def uploadTestDataCustomIdAndReferenceNoReturn(
-    authToken: String,
-    claimId: String,
-    reference: String
-  ): Unit = {
-    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(reference)
-    val response = createUploadTrackingService.postAPayloadObject(
-      claimId,
-      payload,
-      authToken
-    )
-
-    Then("A 201 status code should be returned from CreateUploadTrackingSpec")
-    response.status shouldBe 201
-
-    And("The response body is { success: true }")
-    (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
-
-    seeded += ((claimId, reference))
   }
 
   override protected def afterEach(): Unit = {

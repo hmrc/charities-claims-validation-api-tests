@@ -30,10 +30,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       Then("Upload AwaitingUpload Test Data")
 
       /** Uploading the data to the DB first */
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getAwaitingUploadClaimId,
-        GetUploadResultData().getAwaitingUploadReference
+        claimId = GetUploadResultData().getAwaitingUploadClaimId,
+        reference = GetUploadResultData().getAwaitingUploadReference
       )
 
       /** Checking AwaitingUpload response body */
@@ -47,6 +47,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       And("Response code should be 200")
       response.status shouldBe 200
 
+      // TODO: Ref, val, file return in all response bodies, could make DRY?
       And("The response body is what we expect")
       (Json.parse(response.body) \ "reference")
         .as[String]                                                shouldEqual GetUploadResultData().getAwaitingUploadReference
@@ -61,10 +62,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** We have a valid auth token so now upload the test data to the DB */
       Then("Upload Verifying Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getVerifyingClaimId,
-        GetUploadResultData().getVerifyingReference
+        claimId = GetUploadResultData().getVerifyingClaimId,
+        reference = GetUploadResultData().getVerifyingReference
       )
 
       /** Checking Verifying response body, we need to hit an additional endpoint to change the current "fileStatus" =
@@ -104,24 +105,24 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         *   - UNKNOWN
         */
       Then("Upload Quarantine Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getQuarantineClaimId,
-        GetUploadResultData().getQuarantineReference
+        claimId = GetUploadResultData().getQuarantineClaimId,
+        reference = GetUploadResultData().getQuarantineReference
       )
 
       Then("Upload Rejected Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getRejectedClaimId,
-        GetUploadResultData().getRejectedReference
+        claimId = GetUploadResultData().getRejectedClaimId,
+        reference = GetUploadResultData().getRejectedReference
       )
 
       Then("Upload Unknown Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getUnknownClaimId,
-        GetUploadResultData().getUnknownReference
+        claimId = GetUploadResultData().getUnknownClaimId,
+        reference = GetUploadResultData().getUnknownReference
       )
 
       /** Checking the "fileStatus" = "VERIFICATION_FAILED" which includes
@@ -210,10 +211,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload Validating Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getValidatingClaimId,
-        GetUploadResultData().getValidatingReference
+        claimId = GetUploadResultData().getValidatingClaimId,
+        reference = GetUploadResultData().getValidatingReference
       )
 
       /** Checking Validating response body, we need to hit an additional endpoint to change the current "fileStatus" =
@@ -249,31 +250,31 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload GiftAid DataValid Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getValidDataClaimIdGiftAid,
-        GetUploadResultData().getValidDataReferenceGiftAid
+        claimId = GetUploadResultData().getValidDataClaimIdGiftAid,
+        reference = GetUploadResultData().getValidDataReferenceGiftAid
       )
 
       Then("Upload OtherIncome DataValid Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getValidDataClaimIdOtherIncome,
-        GetUploadResultData().getValidDataReferenceOtherIncome
+        claimId = GetUploadResultData().getValidDataClaimIdOtherIncome,
+        reference = GetUploadResultData().getValidDataReferenceOtherIncome
       )
 
       Then("Upload ConnectedCharities DataValid Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getValidDataClaimIdConnectedCharities,
-        GetUploadResultData().getValidDataReferenceConnectedCharities
+        claimId = GetUploadResultData().getValidDataClaimIdConnectedCharities,
+        reference = GetUploadResultData().getValidDataReferenceConnectedCharities
       )
 
       Then("Upload CommunityBuildings DataValid Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getValidDataClaimIdCommunityBuildings,
-        GetUploadResultData().getValidDataReferenceCommunityBuildings
+        claimId = GetUploadResultData().getValidDataClaimIdCommunityBuildings,
+        reference = GetUploadResultData().getValidDataReferenceCommunityBuildings
       )
 
       /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become
@@ -317,31 +318,31 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload GiftAid InvalidData Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getInvalidDataClaimIdGiftAid,
-        GetUploadResultData().getInvalidDataReferenceGiftAid
+        claimId = GetUploadResultData().getInvalidDataClaimIdGiftAid,
+        reference = GetUploadResultData().getInvalidDataReferenceGiftAid
       )
 
       Then("Upload OtherIncome InvalidData Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getInvalidDataClaimIdOtherIncome,
-        GetUploadResultData().getInvalidDataReferenceOtherIncome
+        claimId = GetUploadResultData().getInvalidDataClaimIdOtherIncome,
+        reference = GetUploadResultData().getInvalidDataReferenceOtherIncome
       )
 
       Then("Upload ConnectedCharities InvalidData Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getInvalidDataClaimIdConnectedCharities,
-        GetUploadResultData().getInvalidDataReferenceConnectedCharities
+        claimId = GetUploadResultData().getInvalidDataClaimIdConnectedCharities,
+        reference = GetUploadResultData().getInvalidDataReferenceConnectedCharities
       )
 
       Then("Upload CommunityBuilding InvalidData Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getInvalidDataClaimIdCommunityBuildings,
-        GetUploadResultData().getInvalidDataReferenceCommunityBuildings
+        claimId = GetUploadResultData().getInvalidDataClaimIdCommunityBuildings,
+        reference = GetUploadResultData().getInvalidDataReferenceCommunityBuildings
       )
 
       // Again TODO: we can't update to VERIFICATION_FAILED just yet --- Blocked by DTR-2169
@@ -382,10 +383,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getAwaitingUploadClaimId,
-        GetUploadResultData().getAwaitingUploadReference
+        claimId = GetUploadResultData().getAwaitingUploadClaimId,
+        reference = GetUploadResultData().getAwaitingUploadReference
       )
 
       /** Checking response body by sending in a reference that isn't the one stored in the DB */
@@ -403,10 +404,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getAwaitingUploadClaimId,
-        GetUploadResultData().getAwaitingUploadReference
+        claimId = GetUploadResultData().getAwaitingUploadClaimId,
+        reference = GetUploadResultData().getAwaitingUploadReference
       )
 
       /** Checking response body by sending in a claimID that isn't the one stored in the DB */
@@ -424,10 +425,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getAwaitingUploadClaimId,
-        GetUploadResultData().getAwaitingUploadReference
+        claimId = GetUploadResultData().getAwaitingUploadClaimId,
+        reference = GetUploadResultData().getAwaitingUploadReference
       )
 
       /** Checking response body by sending in a claimID and reference that isn't the one stored in the DB */
@@ -445,10 +446,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       authToken
 
       Then("Upload Test Data")
-      uploadTestDataCustomIdAndReferenceNoReturn(
+      uploadTestData(
         authToken,
-        GetUploadResultData().getAwaitingUploadHasExpiredClaimId,
-        GetUploadResultData().getAwaitingUploadHasExpiredClaimId
+        claimId = GetUploadResultData().getAwaitingUploadHasExpiredClaimId,
+        reference = GetUploadResultData().getAwaitingUploadHasExpiredClaimId
       )
 
       When("We check a claim that has passed its 7 days expiry")
@@ -480,11 +481,11 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
     val typeOfData = GetUploadResultData().getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
-    (Json.parse(response.body) \ "reference").as[String]         shouldEqual reference
-    (Json.parse(response.body) \ "validationType").asOpt[String] shouldEqual validationType.toString
+    (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
+    (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
     (Json.parse(response.body) \ "fileStatus")
-      .as[String]                                                     should (be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
-    (Json.parse(response.body) \ typeOfData).asOpt[String]          shouldBe defined
+      .as[String]                                                  should (be(FileStatus.VALIDATED) or be(FileStatus.VALIDATION_FAILED))
+    (Json.parse(response.body) \ typeOfData).asOpt[String]       shouldBe defined
 
     if (fileStatus == FileStatus.VALIDATION_FAILED) {
       And("We have invalid data so an additional check for errors")
