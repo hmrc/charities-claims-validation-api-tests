@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
@@ -41,14 +40,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
-      Then("A 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      Then("UpdateUploadStatus check response")
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
   }
 
@@ -69,14 +65,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
         UpdateUploadStatusData.getValidReferenceDifferentFileStatus,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("Nothing should be updated but a 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
 
     Scenario("Successful Payload - claimID doesn't exist") {
@@ -89,20 +82,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getInvalidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Successful Payload - reference doesn't exist") {
@@ -115,20 +99,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getInvalidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Successful Payload - claimID and reference do not exist") {
@@ -141,20 +116,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getInvalidClaimId,
         UpdateUploadStatusData.getInvalidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Unsuccessful Payload - fileStatus != 'VERIFYING'") {
@@ -167,14 +133,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 400 status code should be returned")
-      response.status shouldBe 400
-
-      And("The response body is { success: false }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+      checkGenericResponseBodyAndStatusCode(response, 400, false)
     }
   }
 }

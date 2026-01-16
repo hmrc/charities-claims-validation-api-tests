@@ -98,9 +98,8 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   /** Check for error usually caused by incorrect claimID and / or reference */
   def checkErrorResponse(response: StandaloneWSResponse, statusCode: Int = 404): Unit = {
     And("The error response body is as we expect")
-    (Json.parse(response.body) \ "error").as[String]   shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-    (Json.parse(response.body) \ "message").asOpt[String] shouldBe defined
-
+    (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
+    (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
     And(s"Response code for error should be $statusCode")
     checkStatusCode(response, statusCode)
   }

@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import org.scalactic.Prettifier.default
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
