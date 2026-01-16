@@ -29,18 +29,6 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
   //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
-  /** Upload the data to the DB with a random reference, in this scenario we only care about the ID. We return a random
-    * reference that we can use to delete the claim straight after, mainly used for testing deleting endpoints
-    */
-  def seedUploadTestData(claimId: String, authToken: String, ref: String = UUID.randomUUID().toString): String = {
-    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(ref)
-    val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
-    response.status shouldBe 201
-    seeded += ((claimId, ref))
-
-    ref
-  }
-
   def uploadTestData(
     authToken: String,
     claimId: String = CreateUploadTrackingData.getValidClaimId,
