@@ -29,14 +29,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
-      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+      uploadTestData(
         authToken,
-        UpdateUploadStatusData.getValidClaimId,
-        UpdateUploadStatusData.getValidReference
+        claimId = UpdateUploadStatusData.getValidClaimId,
+        reference = UpdateUploadStatusData.getValidReference
       )
-
-      Then("A 201 status code should be returned")
-      sendingTestDataResponse.status shouldBe 201
 
       And("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -60,14 +57,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
       Given("There is an Auth Token and it's valid")
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
-      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+      uploadTestData(
         authToken,
-        UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        UpdateUploadStatusData.getValidReferenceDifferentFileStatus
+        claimId = UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+        reference = UpdateUploadStatusData.getValidReferenceDifferentFileStatus
       )
-
-      Then("A 201 status code should be returned")
-      sendingTestDataResponse.status shouldBe 201
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload

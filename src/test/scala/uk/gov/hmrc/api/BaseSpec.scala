@@ -36,4 +36,6 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     token shouldNot include("No Auth Token Found")
     token
   }
+
+  // TODO: Could add generic success here to stop repeating it everywhere?
 }
