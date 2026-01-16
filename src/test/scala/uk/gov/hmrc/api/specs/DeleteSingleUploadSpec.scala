@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
+import uk.gov.hmrc.api.data.DeleteUploadData
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
 
@@ -26,88 +26,80 @@ import uk.gov.hmrc.api.specs.tags.E2ETest
 class DeleteSingleUploadSpec extends BaseSpec with UploadTestDataHelper {
 
   Feature("Delete Single Upload API") {
-
     Scenario("Delete one upload from a multi-upload claim", E2ETest) {
       Given("There is a valid AUTH Token")
       authToken
 
-      When("A valid claimId and ref")
-      val claimId = "claim-456"
-      val ref     = seedUploadTestData(claimId, authToken)
+      When("A valid claimId and ref is uploaded")
+      uploadTestData(
+        authToken,
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference
+      )
 
       When("I send DELETE request to the Endpoint")
-      val response =
-        deleteSingleUploadService.deleteSingleUpload(claimId = claimId, ref = ref, authorizationHeaderValue = authToken)
+      val response = deleteSingleUploadService.deleteSingleUpload(
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference,
+        authToken
+      )
 
-      Then("A 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      Then("We check the response body and status code are as expected")
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
 
     Scenario("Delete the ONLY upload associated to a claim", E2ETest) {
       Given("A valid existing claimId and ref in MongoDB")
       authToken
 
-      val claimId = "claim-457"
-      val ref     = seedUploadTestData(claimId, authToken)
+      When("A valid claimId and ref is uploaded")
+      uploadTestData(
+        authToken,
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference
+      )
 
       When("I delete the reference for the first time")
-      val firstDeleteResponse =
-        deleteSingleUploadService.deleteSingleUpload(claimId = claimId, ref = ref, authorizationHeaderValue = authToken)
+      val firstDeleteResponse = deleteSingleUploadService.deleteSingleUpload(
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference,
+        authToken
+      )
 
-      Then("A 200 status code should be returned")
-      firstDeleteResponse.status shouldBe 200
+      Then("We check the response body and status code are as expected")
+      checkGenericResponseBodyAndStatusCode(firstDeleteResponse, 200, true)
 
-      And("The response body is { success: true }")
-      (Json.parse(firstDeleteResponse.body) \ "success").as[Boolean] shouldBe true
-
-//      2nd DELETE Action
+      //      2nd DELETE Action
       When("I delete the same reference again")
-      val secondDeleteResponse =
-        deleteSingleUploadService.deleteSingleUpload(claimId = claimId, ref = ref, authorizationHeaderValue = authToken)
+      val secondDeleteResponse = deleteSingleUploadService.deleteSingleUpload(
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference,
+        authToken
+      )
 
       Then("A 404 status code should be returned")
-      secondDeleteResponse.status shouldBe 404
-
-      And("The response body should contain CLAIM_REFERENCE_DOES_NOT_EXIST")
-      val json = Json.parse(secondDeleteResponse.body)
-      (json \ "error").as[String] shouldBe "CLAIM_REFERENCE_DOES_NOT_EXIST"
+      checkErrorResponse(secondDeleteResponse)
     }
 
     Scenario("Delete non-existent ref, but claimId is existent", E2ETest) {
       authToken
 
       Given("A valid claimId exists, but reference does not")
-      val claimId        = "claim-890"
-      val existingRef    = seedUploadTestData(claimId, authToken)
-      val nonExistentRef = java.util.UUID.randomUUID().toString
-      nonExistentRef should not be existingRef
+      uploadTestData(
+        authToken,
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getValidReference
+      )
 
       When("I delete a reference that does not exist")
-      val response = deleteSingleUploadService.deleteSingleUpload(claimId, nonExistentRef, authToken)
+      val response = deleteSingleUploadService.deleteSingleUpload(
+        DeleteUploadData.getValidClaimId,
+        DeleteUploadData.getInvalidReference,
+        authToken
+      )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And("The response body should contain CLAIM_REFERENCE_DOES_NOT_EXIST")
-      val json = Json.parse(response.body)
-      (json \ "error").as[String] shouldBe "CLAIM_REFERENCE_DOES_NOT_EXIST"
+      checkErrorResponse(response)
     }
-
   }
-
-//  Feature("Charities - Create Delete Upload API - Multi Delete") {
-//    Scenario("Successfully delete a charity claim") {
-//      When("The DeleteSingleUpload(s) Endpoint is sent a valid DELETE Request")
-//      val response = deleteSingleUploadService.deleteManyRequest("claim-123")
-//
-//      Then("A 204 status code should be returned")
-//      response.status shouldBe 204
-//
-//      And("The response body is { success: true }")
-//      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
-//    }
-//  }
 }
