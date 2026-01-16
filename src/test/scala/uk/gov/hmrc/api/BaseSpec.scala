@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.utils
+package uk.gov.hmrc.api
 
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import uk.gov.hmrc.api.helpers.AuthHelper
-import uk.gov.hmrc.api.service.{AuthService, CreateUploadTrackingService, CreateUpscanCallbackService, UpdateUploadStatusService}
+import uk.gov.hmrc.api.service.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {
   val authHelper: AuthHelper                                   = new AuthHelper
@@ -28,6 +28,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val createUploadTrackingService: CreateUploadTrackingService = new CreateUploadTrackingService
   val createUpscanService: CreateUpscanCallbackService         = new CreateUpscanCallbackService
   val updateUploadStatusService: UpdateUploadStatusService     = new UpdateUploadStatusService
+  val getUploadResultService: GetUploadResultService           = new GetUploadResultService
 
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {

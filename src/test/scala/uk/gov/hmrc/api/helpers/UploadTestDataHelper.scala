@@ -17,9 +17,11 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
+import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
+import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
-import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData}
+import uk.gov.hmrc.api.data.CreateUploadTrackingData
 
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
@@ -32,7 +34,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
   def seedUploadTestData(claimId: String, authToken: String, ref: String = UUID.randomUUID().toString): String = {
-    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(ref)
+    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(ref)
     val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
     response.status shouldBe 201
     seeded += ((claimId, ref))
@@ -40,14 +42,16 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     ref
   }
 
+  // TODO: Code is not DRY should revisit and clean up duplicated method
+  // TODO: We could keep the response being returned but could add Cucumber here instead of in the spec(s)
   // Like seedUploadTestData however we simply use the default payload
   def uploadDefaultTestData(authToken: String): StandaloneWSResponse = {
-    val payload  = MockCreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
+    val payload  = CreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
     val response =
-      createUploadTrackingService.postAPayloadObject(MockCreateUploadTrackingData.getValidClaimId, payload, authToken)
+      createUploadTrackingService.postAPayloadObject(CreateUploadTrackingData.getValidClaimId, payload, authToken)
 
     // Add the data to seeded to be cleaned up after the test has executed
-    seeded += ((MockCreateUploadTrackingData.getValidClaimId, MockCreateUploadTrackingData.getValidReference))
+    seeded += ((CreateUploadTrackingData.getValidClaimId, CreateUploadTrackingData.getValidReference))
     response
   }
 
@@ -56,7 +60,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     claimId: String,
     reference: String
   ): StandaloneWSResponse = {
-    val payload  = MockCreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(reference)
     val response = createUploadTrackingService.postAPayloadObject(
       claimId,
       payload,
@@ -65,6 +69,29 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 
     seeded += ((claimId, reference))
     response
+  }
+
+  // TODO: This will be removed in refactoring of this class but for now same behaviour as class above
+  // but will not be returning a response just to keep the GetUploadResultSpec cleaner
+  def uploadTestDataCustomIdAndReferenceNoReturn(
+    authToken: String,
+    claimId: String,
+    reference: String
+  ): Unit = {
+    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val response = createUploadTrackingService.postAPayloadObject(
+      claimId,
+      payload,
+      authToken
+    )
+
+    Then("A 201 status code should be returned from CreateUploadTrackingSpec")
+    response.status shouldBe 201
+
+    And("The response body is { success: true }")
+    (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+
+    seeded += ((claimId, reference))
   }
 
   override protected def afterEach(): Unit = {

@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.helpers
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.models.CreateOrganisationAuthPayload
 import uk.gov.hmrc.api.service.AuthService
-import uk.gov.hmrc.api.utils.OrganisationAuthData
+import uk.gov.hmrc.api.data.OrganisationAuthData
 
 class AuthHelper {
   var bearerToken: String                    = ""

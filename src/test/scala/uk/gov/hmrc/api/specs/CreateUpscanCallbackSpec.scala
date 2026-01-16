@@ -17,9 +17,10 @@
 package uk.gov.hmrc.api.specs
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.utils.{BaseSpec, MockCreateUploadTrackingData, MockCreateUpscanCallbackData}
+import uk.gov.hmrc.api.data.{CreateUploadTrackingData, CreateUpscanCallbackData}
 
 class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upscan Callback API - E2E") {
@@ -38,9 +39,9 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
 
       Then("The CreateUpscanCallback Endpoint is sent a valid POST Request")
-      val payload        = MockCreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
+      val payload        = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
       val upscanResponse = createUpscanService.postSuccessfulPayloadObject(
-        MockCreateUploadTrackingData.getValidClaimId,
+        CreateUploadTrackingData.getValidClaimId,
         payload,
         authHelper.bearerToken
       )
@@ -58,8 +59,8 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val quarantineResponse = uploadTestDataCustomIdAndReference(
         authToken,
-        MockCreateUpscanCallbackData.getQuarantineClaimId,
-        MockCreateUpscanCallbackData.getQuarantineRef
+        CreateUpscanCallbackData.getQuarantineClaimId,
+        CreateUpscanCallbackData.getQuarantineRef
       )
 
       Then("A 201 status code should be returned")
@@ -67,9 +68,9 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request using the same details just created")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(0)
-      val payload  = MockCreateUpscanCallbackData.getQuarantineUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getQuarantineUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
-        MockCreateUpscanCallbackData.getQuarantineClaimId,
+        CreateUpscanCallbackData.getQuarantineClaimId,
         payload,
         authHelper.bearerToken
       )
@@ -85,17 +86,17 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val rejectedResponse = uploadTestDataCustomIdAndReference(
         authToken,
-        MockCreateUpscanCallbackData.getRejectedClaimId,
-        MockCreateUpscanCallbackData.getRejectedRef
+        CreateUpscanCallbackData.getRejectedClaimId,
+        CreateUpscanCallbackData.getRejectedRef
       )
       Then("A 201 status code should be returned")
       rejectedResponse.status shouldBe 201
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(1)
-      val payload  = MockCreateUpscanCallbackData.getRejectedUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getRejectedUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
-        MockCreateUpscanCallbackData.getRejectedClaimId,
+        CreateUpscanCallbackData.getRejectedClaimId,
         payload,
         authHelper.bearerToken
       )
@@ -111,17 +112,17 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       val unknownResponse = uploadTestDataCustomIdAndReference(
         authToken,
-        MockCreateUpscanCallbackData.getUnknownClaimId,
-        MockCreateUpscanCallbackData.getUnknownRef
+        CreateUpscanCallbackData.getUnknownClaimId,
+        CreateUpscanCallbackData.getUnknownRef
       )
       Then("A 201 status code should be returned")
       unknownResponse.status shouldBe 201
 
       And("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
       // val payload  = MockCreateUpscanCallbackData.getFailedCreateUpscanCallbackPayload(2)
-      val payload  = MockCreateUpscanCallbackData.getUnknownUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getUnknownUpscanCallbackPayload()
       val response = createUpscanService.postUnsuccessfulPayloadObject(
-        MockCreateUpscanCallbackData.getUnknownClaimId,
+        CreateUpscanCallbackData.getUnknownClaimId,
         payload,
         authHelper.bearerToken
       )
@@ -135,9 +136,9 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUpscanCallbackData.getInvalidFileTypeCreateUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getInvalidFileTypeCreateUpscanCallbackPayload
       val response = createUpscanService.postSuccessfulPayloadObject(
-        MockCreateUploadTrackingData.getValidClaimId,
+        CreateUploadTrackingData.getValidClaimId,
         payload,
         authHelper.bearerToken
       )
@@ -151,9 +152,9 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       authHelper.bearerToken shouldNot contain("No Auth Token Found")
 
       When("The CreateUpscanCallback Endpoint is sent an invalid POST Request")
-      val payload  = MockCreateUpscanCallbackData.getInvalidReferenceCreateUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getInvalidReferenceCreateUpscanCallbackPayload
       val response = createUpscanService.postSuccessfulPayloadObject(
-        MockCreateUploadTrackingData.getValidClaimId,
+        CreateUploadTrackingData.getValidClaimId,
         payload,
         authHelper.bearerToken
       )

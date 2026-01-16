@@ -19,7 +19,7 @@ package uk.gov.hmrc.api.specs
 import play.api.libs.json.Json
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
-import uk.gov.hmrc.api.utils.BaseSpec
+import uk.gov.hmrc.api.BaseSpec
 
 // Happy Paths
 
