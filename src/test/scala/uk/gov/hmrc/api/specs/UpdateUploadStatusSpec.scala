@@ -26,7 +26,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Update Upload Status API - E2E") {
     Scenario("Successful Payload - A valid claim that is 'AWAITING_UPLOAD' has been updated", E2ETest) {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
       uploadTestData(
@@ -55,7 +55,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Update Upload Status API - All Tests") {
     Scenario("Successful Payload - A valid claim that IS NOT 'AWAITING_UPLOAD'") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       uploadTestData(
         authToken,
@@ -81,7 +81,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Successful Payload - claimID doesn't exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -107,7 +107,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Successful Payload - reference doesn't exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and reference is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -133,7 +133,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Successful Payload - claimID and reference do not exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request where claimID and reference is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -159,7 +159,7 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Unsuccessful Payload - fileStatus != 'VERIFYING'") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent an valid PUT Request where fileStatus is incorrect")
       val payload  = UpdateUploadStatusData.getInvalidFileStatusPayload

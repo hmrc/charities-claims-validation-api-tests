@@ -22,7 +22,6 @@ import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.data.GetUploadResultData
-import uk.gov.hmrc.api.helpers.FileStatus.AWAITING_UPLOAD
 import uk.gov.hmrc.api.helpers.{AuthHelper, FailureReason, FileStatus, ValidationType}
 import uk.gov.hmrc.api.service.*
 
@@ -34,7 +33,6 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val updateUploadStatusService: UpdateUploadStatusService     = new UpdateUploadStatusService
   val getUploadResultService: GetUploadResultService           = new GetUploadResultService
 
-  // TODO: Remove -> authHelper.bearerToken shouldNot contain("No Auth Token Found") from specs
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {
     val token = authHelper.bearerToken

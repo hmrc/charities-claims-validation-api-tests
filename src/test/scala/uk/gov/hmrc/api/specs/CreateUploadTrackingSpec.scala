@@ -17,7 +17,6 @@
 package uk.gov.hmrc.api.specs
 
 import org.scalactic.Prettifier.default
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
@@ -27,7 +26,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upload Tracking API - E2E") {
     Scenario("Successful Payload - User wants to upload a spreadsheet for charity claim(s)", E2ETest) {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The CreateUploadTracking Endpoint is sent a valid POST Request")
       uploadTestData(authToken)
@@ -37,7 +36,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Create Upload Tracking API - All Test Cases") {
     Scenario("Invalid Payload - User wants to upload a spreadsheet for charity claim(s)") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The CreateUploadTracking Endpoint is sent an invalid POST Request")
       val payload  = CreateUploadTrackingData.getInvalidValidationCreateUploadTrackingPayload
@@ -54,7 +53,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("Incomplete Payload - User wants to upload a spreadsheet for charity claim(s)") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The CreateUploadTracking Endpoint is sent an incomplete POST Request")
       val response =
@@ -66,7 +65,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
 
     Scenario("The 'validationType' is a duplicate for this claimID") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When(
         "The CreateUploadTracking Endpoint is sent a valid POST Request" +

@@ -16,12 +16,9 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
-import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.{FailureReason, FileStatus, UploadTestDataHelper, ValidationType}
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadResultData, UpdateUploadStatusData}
-import uk.gov.hmrc.api.helpers.ValidationType.GiftAid
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Get Upload Result API - All successful response bodies") {

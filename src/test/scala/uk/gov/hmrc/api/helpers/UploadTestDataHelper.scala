@@ -17,7 +17,6 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
