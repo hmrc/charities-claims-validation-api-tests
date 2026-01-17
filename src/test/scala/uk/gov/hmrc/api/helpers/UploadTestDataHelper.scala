@@ -20,8 +20,6 @@ import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
 import uk.gov.hmrc.api.data.globals.ValidationType
-
-import java.util.UUID
 import scala.collection.mutable.ListBuffer
 
 /** Useful class for uploading data to the database that conveniently deletes the records after each test scenario

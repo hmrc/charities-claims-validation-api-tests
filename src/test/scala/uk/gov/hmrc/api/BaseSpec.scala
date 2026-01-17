@@ -38,8 +38,10 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
 
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {
+    When("We request a bearer token")
     val token = authHelper.bearerToken
     token shouldNot include("No Auth Token Found")
+    Then("Then token is valid")
     token
   }
 
@@ -55,8 +57,10 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     (Json.parse(response.body) \ "success").as[Boolean] shouldBe responseSuccess
   }
 
-  def checkStatusCode(response: StandaloneWSResponse, statusCode: Int): Unit =
+  def checkStatusCode(response: StandaloneWSResponse, statusCode: Int): Unit = {
+    Then(s"A $statusCode code should be returned from checkStatusCode")
     response.status shouldBe statusCode
+  }
 
   /** A few of the APIs all return response bodies that share data, breaking out the common functionality here to keep
     * code DRY and spec files more condensed Note: we generally don't care about failureReason as this will only occur
@@ -70,7 +74,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     fileStatus: FileStatus,
     failureReason: FailureReason = FailureReason.SUCCESS
   ): Unit = {
-    And("The response body is what we expect")
+    Then(s"The response body within checkCommonResponseBody is what we expect for a claim with fileStatus $fileStatus")
     (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
     (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
     (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual fileStatus.toString
@@ -100,7 +104,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
 
   /** Check for error usually caused by incorrect claimID and / or reference */
   def checkErrorResponse(response: StandaloneWSResponse, statusCode: Int = 404): Unit = {
-    And("The error response body is as we expect")
+    And("We are checking common error response bodies")
     (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
     (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
     And(s"Response code for error should be $statusCode")
@@ -115,8 +119,8 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     validationType: ValidationType,
     fileStatus: FileStatus
   ): Unit = {
-    val reference  = GetUploadResultData().getCorrectReference(validationType, fileStatus)
-    val typeOfData = GetUploadResultData().getCorrectJsonBodyFieldName(validationType)
+    val reference  = GetUploadResultData.getCorrectReference(validationType, fileStatus)
+    val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
     (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference

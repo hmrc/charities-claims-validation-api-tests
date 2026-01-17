@@ -18,7 +18,7 @@ package uk.gov.hmrc.api.data
 
 import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
 
-class GetUploadResultData {
+object GetUploadResultData {
 
   /** Simply a class to hold pre-determined claimIDs and references to test all edge cases to ensure GetUploadResult API
     * works as intended We need to retrieve multiple individual claim(s) so storing all identifiers in one place to
