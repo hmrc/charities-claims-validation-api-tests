@@ -21,8 +21,9 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
 import play.api.libs.json.Json
 import play.api.libs.ws.StandaloneWSResponse
+import uk.gov.hmrc.api.data.globals.{FailureReason, FileStatus, ValidationType}
 import uk.gov.hmrc.api.data.GetUploadResultData
-import uk.gov.hmrc.api.helpers.{AuthHelper, FailureReason, FileStatus, ValidationType}
+import uk.gov.hmrc.api.helpers.AuthHelper
 import uk.gov.hmrc.api.service.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {

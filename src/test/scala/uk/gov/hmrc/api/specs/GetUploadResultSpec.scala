@@ -17,7 +17,8 @@
 package uk.gov.hmrc.api.specs
 
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.helpers.{FailureReason, FileStatus, UploadTestDataHelper, ValidationType}
+import uk.gov.hmrc.api.data.globals.{FailureReason, FileStatus, ValidationType}
+import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadResultData, UpdateUploadStatusData}
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {

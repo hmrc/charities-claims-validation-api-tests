@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.api.data
 
-import uk.gov.hmrc.api.helpers.{FileStatus, ValidationType}
+import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
 
 class GetUploadResultData {
 

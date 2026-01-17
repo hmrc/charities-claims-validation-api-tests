@@ -19,6 +19,8 @@ package uk.gov.hmrc.api.helpers
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
+import uk.gov.hmrc.api.data.globals.ValidationType
+
 import java.util.UUID
 import scala.collection.mutable.ListBuffer
 

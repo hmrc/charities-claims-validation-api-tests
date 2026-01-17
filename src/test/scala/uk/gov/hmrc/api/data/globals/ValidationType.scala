@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.helpers
+package uk.gov.hmrc.api.data.globals
 
-enum FileStatus:
-  case AWAITING_UPLOAD, VERIFYING, VERIFICATION_FAILED, VALIDATING, VALIDATED, VALIDATION_FAILED
+// The only valid types we are expecting for validationType in our payload
+enum ValidationType:
+  case GiftAid, OtherIncome, CommunityBuildings, ConnectedCharities

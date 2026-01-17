@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.api.helpers
+package uk.gov.hmrc.api.data.globals
 
 /** Upscan call back can provide three known responses for a VALIDATION_FAILED state, these are
   *   - QUARANTINE, REJECTED, UNKNOWN. Success is used for a method in BaseSpec for us to use as a default value, i.e.,

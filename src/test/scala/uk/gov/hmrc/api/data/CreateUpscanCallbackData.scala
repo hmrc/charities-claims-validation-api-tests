@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.api.data
 
-import uk.gov.hmrc.api.helpers.FailureReason
+import uk.gov.hmrc.api.data.globals.FailureReason
 import uk.gov.hmrc.api.models.{CreateUpscanCallbackFailedPayload, CreateUpscanCallbackSuccessfulPayload, FailureDetailsUpscanCallback, UploadDetailsUpscanCallback}
 
 object CreateUpscanCallbackData {
