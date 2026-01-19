@@ -20,7 +20,7 @@ import uk.gov.hmrc.api.models.{CreateOrganisationAuthPayload, OrganisationEnrolm
 
 import scala.util.Random
 
-class OrganisationAuthData {
+object OrganisationAuthData {
   def getOrganisationIdentifierPayload: OrganisationIdentifiersDetails = OrganisationIdentifiersDetails(
     key = "CHARID",
     value = "123456789"

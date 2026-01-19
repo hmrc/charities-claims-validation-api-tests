@@ -23,8 +23,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.*
 
 class CreateDeleteUploadService extends HttpClient {
-  // TODO: URLs need to be configured / changed
-  val host: String     = TestEnvironment.url("create-delete-upload-single-stub")
+  val host: String     = TestEnvironment.url("Charities Claims Validation")
   val endpoint: String = "/upload-results"
 
   def deleteSingleRequest(claimID: String, claimRef: String): StandaloneWSResponse =

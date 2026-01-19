@@ -24,7 +24,7 @@ import uk.gov.hmrc.api.data.OrganisationAuthData
 class AuthHelper {
   var bearerToken: String                    = ""
   val authAPI: AuthService                   = new AuthService
-  val payload: CreateOrganisationAuthPayload = OrganisationAuthData().getOrganisationAuthPayload
+  val payload: CreateOrganisationAuthPayload = OrganisationAuthData.getOrganisationAuthPayload
 
   def fetchAuthBearerToken(): Unit = {
     val authTokenRegex                 = """(?i)Bearer\s+(\S+)""".r

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.api.data
 
-import uk.gov.hmrc.api.helpers.ValidationType
+import uk.gov.hmrc.api.data.globals.ValidationType
 import uk.gov.hmrc.api.models.CreateUploadTrackingPayload
 
 object CreateUploadTrackingData {

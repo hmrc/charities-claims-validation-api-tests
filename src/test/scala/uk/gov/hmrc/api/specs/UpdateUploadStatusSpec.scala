@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.api.specs
 
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.specs.tags.E2ETest
@@ -26,17 +25,14 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Update Upload Status API - E2E") {
     Scenario("Successful Payload - A valid claim that is 'AWAITING_UPLOAD' has been updated", E2ETest) {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("We have sent the first set of test data for UpdateUploadStatus API to the DB")
-      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+      uploadTestData(
         authToken,
-        UpdateUploadStatusData.getValidClaimId,
-        UpdateUploadStatusData.getValidReference
+        claimId = UpdateUploadStatusData.getValidClaimId,
+        reference = UpdateUploadStatusData.getValidReference
       )
-
-      Then("A 201 status code should be returned")
-      sendingTestDataResponse.status shouldBe 201
 
       And("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -44,30 +40,24 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
-      Then("A 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      Then("UpdateUploadStatus check response")
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
   }
 
   Feature("Charities - Update Upload Status API - All Tests") {
     Scenario("Successful Payload - A valid claim that IS NOT 'AWAITING_UPLOAD'") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
-      val sendingTestDataResponse = uploadTestDataCustomIdAndReference(
+      uploadTestData(
         authToken,
-        UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
-        UpdateUploadStatusData.getValidReferenceDifferentFileStatus
+        claimId = UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
+        reference = UpdateUploadStatusData.getValidReferenceDifferentFileStatus
       )
-
-      Then("A 201 status code should be returned")
-      sendingTestDataResponse.status shouldBe 201
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID / ref / fileStatus are valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -75,19 +65,16 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimIdDifferentFileStatus,
         UpdateUploadStatusData.getValidReferenceDifferentFileStatus,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("Nothing should be updated but a 200 status code should be returned")
-      response.status shouldBe 200
-
-      And("The response body is { success: true }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
+      checkGenericResponseBodyAndStatusCode(response, 200, true)
     }
 
     Scenario("Successful Payload - claimID doesn't exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and claimID is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -95,25 +82,16 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getInvalidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Successful Payload - reference doesn't exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request and reference is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -121,25 +99,16 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getInvalidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Successful Payload - claimID and reference do not exist") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent a valid PUT Request where claimID and reference is not valid")
       val payload  = UpdateUploadStatusData.getSuccessfulPayload
@@ -147,25 +116,16 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getInvalidClaimId,
         UpdateUploadStatusData.getInvalidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 404 status code should be returned")
-      response.status shouldBe 404
-
-      And(
-        "The response body is { " +
-          "error: 'CLAIM_REFERENCE_DOES_NOT_EXIST' " +
-          "message: 'There is no reference = ref-123 found for the given claimId = 123'" +
-          "}"
-      )
-      (Json.parse(response.body) \ "error").as[String] shouldEqual "CLAIM_REFERENCE_DOES_NOT_EXIST"
-      (Json.parse(response.body) \ "message").as[String]    should include("There is no reference")
+      checkErrorResponse(response)
     }
 
     Scenario("Unsuccessful Payload - fileStatus != 'VERIFYING'") {
       Given("There is an Auth Token and it's valid")
-      authHelper.bearerToken shouldNot contain("No Auth Token Found")
+      authToken
 
       When("The UpdateUploadStatus Endpoint is sent an valid PUT Request where fileStatus is incorrect")
       val payload  = UpdateUploadStatusData.getInvalidFileStatusPayload
@@ -173,14 +133,11 @@ class UpdateUploadStatusSpec extends BaseSpec with UploadTestDataHelper {
         UpdateUploadStatusData.getValidClaimId,
         UpdateUploadStatusData.getValidReference,
         payload,
-        authHelper.bearerToken
+        authToken
       )
 
       Then("A 400 status code should be returned")
-      response.status shouldBe 400
-
-      And("The response body is { success: false }")
-      (Json.parse(response.body) \ "success").as[Boolean] shouldBe false
+      checkGenericResponseBodyAndStatusCode(response, 400, false)
     }
   }
 }

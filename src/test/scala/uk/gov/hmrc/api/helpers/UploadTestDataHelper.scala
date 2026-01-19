@@ -17,81 +17,48 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.Json
-import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.service.{DeleteSingleUploadService, DeleteUploadsClaimService}
 import uk.gov.hmrc.api.data.CreateUploadTrackingData
-
-import java.util.UUID
+import uk.gov.hmrc.api.data.globals.ValidationType
 import scala.collection.mutable.ListBuffer
 
+/** Useful class for uploading data to the database that conveniently deletes the records after each test scenario
+  * completes so we can run the test in automation without any interference / extra work / DB cleanup
+  */
 trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
-//  services used for seeding and cleanup
-  val deleteSingleUploadService            = new DeleteSingleUploadService()
-  val deleteUploadsClaimService            = new DeleteUploadsClaimService()
-//  Store everything created for easy cleanup
+  //  Store everything created for easy cleanup
   val seeded: ListBuffer[(String, String)] = ListBuffer.empty
 
-  def seedUploadTestData(claimId: String, authToken: String, ref: String = UUID.randomUUID().toString): String = {
-    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(ref)
-    val response = createUploadTrackingService.postAPayloadObject(claimId, payload, authToken)
-    response.status shouldBe 201
-    seeded += ((claimId, ref))
-
-    ref
-  }
-
-  // TODO: Code is not DRY should revisit and clean up duplicated method
-  // TODO: We could keep the response being returned but could add Cucumber here instead of in the spec(s)
-  // Like seedUploadTestData however we simply use the default payload
-  def uploadDefaultTestData(authToken: String): StandaloneWSResponse = {
-    val payload  = CreateUploadTrackingData.getSuccessfulCreateUploadTrackingPayload
-    val response =
-      createUploadTrackingService.postAPayloadObject(CreateUploadTrackingData.getValidClaimId, payload, authToken)
-
-    // Add the data to seeded to be cleaned up after the test has executed
-    seeded += ((CreateUploadTrackingData.getValidClaimId, CreateUploadTrackingData.getValidReference))
-    response
-  }
-
-  def uploadTestDataCustomIdAndReference(
+  def uploadTestData(
     authToken: String,
-    claimId: String,
-    reference: String
-  ): StandaloneWSResponse = {
-    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(reference)
-    val response = createUploadTrackingService.postAPayloadObject(
-      claimId,
-      payload,
-      authToken
-    )
-
-    seeded += ((claimId, reference))
-    response
-  }
-
-  // TODO: This will be removed in refactoring of this class but for now same behaviour as class above
-  // but will not be returning a response just to keep the GetUploadResultSpec cleaner
-  def uploadTestDataCustomIdAndReferenceNoReturn(
-    authToken: String,
-    claimId: String,
-    reference: String
+    claimId: String = CreateUploadTrackingData.getValidClaimId,
+    reference: String = CreateUploadTrackingData.getValidReference,
+    validationType: ValidationType = ValidationType.GiftAid,
+    responseCode: Int = 201,
+    responseSuccess: Boolean = true
   ): Unit = {
-    val payload  = CreateUploadTrackingData.successfulPayloadWithReference(reference)
+    val payload  = CreateUploadTrackingData.customSuccessfulPayLoad(
+      reference,
+      validationType.toString
+    )
     val response = createUploadTrackingService.postAPayloadObject(
       claimId,
       payload,
       authToken
     )
 
-    Then("A 201 status code should be returned from CreateUploadTrackingSpec")
-    response.status shouldBe 201
-
-    And("The response body is { success: true }")
-    (Json.parse(response.body) \ "success").as[Boolean] shouldBe true
-
+    /** Add the data to seeded to be cleaned up after the test has executed by calling delete endpoint with the claimId
+      * and reference provided
+      */
     seeded += ((claimId, reference))
+
+    /** In most cases the successful upload of test data will result in a 201 status code. It is unnecessary to repeat
+      * this check everywhere we upload data as we want to keep code DRY and spec files smaller by doing it here. There
+      * are one or two instances where we check if the status code is 500 for example due to claim already existing so
+      * we have the ability to assert the expected status code and body for these unique edge cases
+      */
+    Then(s"A $responseCode status code should be returned from uploadTestData, using: CreateUploadTracking API")
+    checkGenericResponseBodyAndStatusCode(response, responseCode = responseCode, responseSuccess = responseSuccess)
   }
 
   override protected def afterEach(): Unit = {
