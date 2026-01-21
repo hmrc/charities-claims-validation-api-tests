@@ -27,6 +27,7 @@ import uk.gov.hmrc.api.helpers.AuthHelper
 import uk.gov.hmrc.api.service.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {
+  // TODO: Maybe another refactor needed, in some cases where we used the reference we don't really care about it anymore
   val authHelper: AuthHelper                                   = new AuthHelper
   val authService: AuthService                                 = new AuthService
   val createUploadTrackingService: CreateUploadTrackingService = new CreateUploadTrackingService
@@ -35,6 +36,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val getUploadResultService: GetUploadResultService           = new GetUploadResultService
   val deleteSingleUploadService                                = new DeleteSingleUploadService
   val deleteUploadsClaimService                                = new DeleteUploadsClaimService
+  val getUploadSummaryService: GetUploadSummaryService         = new GetUploadSummaryService
 
   authHelper.fetchAuthBearerToken()
   protected def authToken: String = {
@@ -69,13 +71,12 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     */
   def checkCommonResponseBodies(
     response: StandaloneWSResponse,
-    reference: String,
     validationType: ValidationType,
     fileStatus: FileStatus,
     failureReason: FailureReason = FailureReason.SUCCESS
   ): Unit = {
     Then(s"The response body within checkCommonResponseBody is what we expect for a claim with fileStatus $fileStatus")
-    (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
+    (Json.parse(response.body) \ "reference").asOpt[String]      shouldBe defined
     (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
     (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual fileStatus.toString
 

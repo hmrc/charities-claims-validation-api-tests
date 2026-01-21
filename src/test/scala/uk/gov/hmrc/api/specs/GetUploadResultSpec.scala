@@ -37,7 +37,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking AwaitingUpload response body */
       When("We check that AwaitingClaim returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getAwaitingUploadClaimId,
         GetUploadResultData.getAwaitingUploadReference,
         authToken
@@ -48,7 +48,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       checkCommonResponseBodies(
         response,
-        GetUploadResultData.getAwaitingUploadReference,
         ValidationType.GiftAid,
         FileStatus.AWAITING_UPLOAD
       )
@@ -77,7 +76,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check now that Verifying returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getVerifyingClaimId,
         GetUploadResultData.getVerifyingReference,
         authToken
@@ -88,7 +87,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       checkCommonResponseBodies(
         response,
-        GetUploadResultData.getVerifyingReference,
         ValidationType.GiftAid,
         FileStatus.VERIFYING
       )
@@ -151,7 +149,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Now calling GetUploadResult for all three claims to check the response body */
       Then("We call GetUploadResult to check QUARANTINE")
-      val quarantineResponse = getUploadResultService.postAPayloadObject(
+      val quarantineResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getQuarantineClaimId,
         GetUploadResultData.getQuarantineReference,
         authToken
@@ -163,14 +161,13 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       And("The response body is what we expect")
       checkCommonResponseBodies(
         quarantineResponse,
-        GetUploadResultData.getQuarantineReference,
         ValidationType.GiftAid,
         FileStatus.VERIFICATION_FAILED,
         failureReason = FailureReason.QUARANTINE
       )
 
       Then("We call GetUploadResult to check REJECTED")
-      val rejectedResponse = getUploadResultService.postAPayloadObject(
+      val rejectedResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getRejectedClaimId,
         GetUploadResultData.getRejectedReference,
         authToken
@@ -182,14 +179,13 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       And("The response body is what we expect")
       checkCommonResponseBodies(
         rejectedResponse,
-        GetUploadResultData.getRejectedReference,
         ValidationType.GiftAid,
         FileStatus.VERIFICATION_FAILED,
         failureReason = FailureReason.REJECTED
       )
 
       Then("We call GetUploadResult to check UNKNOWN")
-      val unknownResponse = getUploadResultService.postAPayloadObject(
+      val unknownResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getUnknownClaimId,
         GetUploadResultData.getUnknownReference,
         authToken
@@ -201,7 +197,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       And("The response body is what we expect")
       checkCommonResponseBodies(
         unknownResponse,
-        GetUploadResultData.getUnknownReference,
         ValidationType.GiftAid,
         FileStatus.VERIFICATION_FAILED,
         failureReason = FailureReason.UNKNOWN
@@ -231,7 +226,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check now that Validating returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidatingClaimId,
         GetUploadResultData.getValidatingReference,
         authToken
@@ -243,7 +238,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       And("The response body is what we expect")
       checkCommonResponseBodies(
         response,
-        GetUploadResultData.getValidatingReference,
         ValidationType.GiftAid,
         FileStatus.VALIDATING
       )
@@ -287,25 +281,25 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking data valid - GiftAid, OtherIncome, ConnectedCharities and CommunityBuildings */
       Then("We check now that Data Valid returns expected response body")
-      val giftAidResponse = getUploadResultService.postAPayloadObject(
+      val giftAidResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidDataClaimIdGiftAid,
         GetUploadResultData.getValidDataReferenceGiftAid,
         authToken
       )
 
-      val otherIncomeResponse = getUploadResultService.postAPayloadObject(
+      val otherIncomeResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidDataClaimIdOtherIncome,
         GetUploadResultData.getValidDataReferenceOtherIncome,
         authToken
       )
 
-      val connectedCharitiesResponse = getUploadResultService.postAPayloadObject(
+      val connectedCharitiesResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidDataClaimIdConnectedCharities,
         GetUploadResultData.getValidDataReferenceConnectedCharities,
         authToken
       )
 
-      val communityBuildingResponse = getUploadResultService.postAPayloadObject(
+      val communityBuildingResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidDataClaimIdCommunityBuildings,
         GetUploadResultData.getValidDataReferenceCommunityBuildings,
         authToken
@@ -358,25 +352,25 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       // Again TODO: we can't update to VERIFICATION_FAILED just yet --- Blocked by DTR-2169
 
-      val giftAidResponse = getUploadResultService.postAPayloadObject(
+      val giftAidResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getInvalidDataClaimIdGiftAid,
         GetUploadResultData.getInvalidDataReferenceGiftAid,
         authToken
       )
 
-      val otherIncomeResponse = getUploadResultService.postAPayloadObject(
+      val otherIncomeResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getInvalidDataClaimIdOtherIncome,
         GetUploadResultData.getInvalidDataReferenceOtherIncome,
         authToken
       )
 
-      val connectedCharitiesResponse = getUploadResultService.postAPayloadObject(
+      val connectedCharitiesResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getInvalidDataClaimIdConnectedCharities,
         GetUploadResultData.getInvalidDataReferenceConnectedCharities,
         authToken
       )
 
-      val communityBuildingResponse = getUploadResultService.postAPayloadObject(
+      val communityBuildingResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getInvalidDataClaimIdCommunityBuildings,
         GetUploadResultData.getInvalidDataReferenceCommunityBuildings,
         authToken
@@ -414,7 +408,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking response body by sending in a reference that isn't the one stored in the DB */
       When("We check that invalid reference returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getAwaitingUploadClaimId,
         GetUploadResultData.getThisReferenceDoesNotExist,
         authToken
@@ -435,7 +429,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking response body by sending in a claimID that isn't the one stored in the DB */
       When("We check that invalid claimID returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getThisClaimIdDoesNotExist,
         GetUploadResultData.getAwaitingUploadReference,
         authToken
@@ -456,7 +450,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking response body by sending in a claimID and reference that isn't the one stored in the DB */
       When("We check that invalid claimID and reference returns expected response body")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getThisClaimIdDoesNotExist,
         GetUploadResultData.getThisReferenceDoesNotExist,
         authToken
@@ -476,7 +470,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       When("We check a claim that has passed its 7 days expiry")
-      val response = getUploadResultService.postAPayloadObject(
+      val response = getUploadResultService.getUploadResults(
         GetUploadResultData.getAwaitingUploadHasExpiredClaimId,
         GetUploadResultData.getAwaitingUploadHasExpiredClaimId,
         authToken

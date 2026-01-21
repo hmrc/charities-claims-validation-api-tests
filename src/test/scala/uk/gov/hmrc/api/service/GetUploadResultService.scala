@@ -27,7 +27,7 @@ class GetUploadResultService extends HttpClient {
   val host: String     = TestEnvironment.url("Charities Claims Validation")
   val endpoint: String = "upload-results"
 
-  def postAPayloadObject(
+  def getUploadResults(
     claimId: String,
     reference: String,
     token: String

@@ -19,6 +19,8 @@ package uk.gov.hmrc.api.data
 import uk.gov.hmrc.api.data.globals.FailureReason
 import uk.gov.hmrc.api.models.{CreateUpscanCallbackFailedPayload, CreateUpscanCallbackSuccessfulPayload, FailureDetailsUpscanCallback, UploadDetailsUpscanCallback}
 
+// TODO: Refactor needed now we can provide spreadsheets?
+// I'm thinking we simply make this a case class and we can override the data with the file locations we need
 object CreateUpscanCallbackData {
 
   /** API_NAME is responsible for appending itself to claimId and reference so we know what documents stored in the DB
