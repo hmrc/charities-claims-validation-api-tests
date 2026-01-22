@@ -27,7 +27,6 @@ import uk.gov.hmrc.api.helpers.AuthHelper
 import uk.gov.hmrc.api.service.*
 
 trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with BeforeAndAfterEach {
-  // TODO: Maybe another refactor needed, in some cases where we used the reference we don't really care about it anymore
   val authHelper: AuthHelper                                   = new AuthHelper
   val authService: AuthService                                 = new AuthService
   val createUploadTrackingService: CreateUploadTrackingService = new CreateUploadTrackingService
@@ -92,19 +91,22 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   /** This could be refactored to extends checkCommonResponseBodies This method checks the same as above, ref, valType,
     * fileStatus but inside a response that is wrapped in an array under the field "Uploads"
     */
-  def checkCommonResponseInsideUploadsField(response: StandaloneWSResponse, expectedClaimsCount: Int = 1): Unit = {
-    val allData: Seq[JsValue] = (Json.parse(response.body) \ "uploads").asOpt[Seq[JsValue]].getOrElse(Seq.empty)
+  def checkCommonResponseInsideUploadsField(response: StandaloneWSResponse, amountOfClaims: Int = 1): Unit = {
+    When("We check all main fields are there for all claims associated to this claimID")
+    (Json.parse(response.body) \\ "reference").length      shouldEqual amountOfClaims
+    (Json.parse(response.body) \\ "validationType").length shouldEqual amountOfClaims
+    (Json.parse(response.body) \\ "fileStatus").length     shouldEqual amountOfClaims
 
-    When("We find the 'uploads' array and then check each field is present")
-    allData.foreach { field =>
-      (field \ "reference").asOpt[String]      shouldBe defined
-      (field \ "validationType").asOpt[String] shouldBe defined
-      (field \ "fileStatus").asOpt[String]     shouldBe defined
-      ((field \ "uploadUrl").asOpt[String])      should (be(defined) or be(empty))
-    }
+    Then("We check that all claims have valid types")
+    (Json.parse(response.body) \\ "validationType")
+      .map(_.as[String])
+      .forall(eachValidationField => ValidationType.fromString(eachValidationField).isDefined) shouldBe true
+    (Json.parse(response.body) \\ "fileStatus")
+      .map(_.as[String])
+      .forall(eachFileField => FileStatus.fromString(eachFileField).isDefined)                 shouldBe true
 
-    And("All claims are present")
-    allData.size shouldBe expectedClaimsCount
+    And("The response code is what we expect")
+    checkStatusCode(response, 200)
   }
 
   /** Claims that have fileStatus = AWAITING_UPLOAD will have additional fields in the response body */

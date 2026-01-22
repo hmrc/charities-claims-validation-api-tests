@@ -1,5 +1,7 @@
 package uk.gov.hmrc.api.specs
 
+import org.apache.pdfbox.util.filetypedetector.FileType
+import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadSummaryData}
 import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
@@ -39,12 +41,9 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
 
       Then("We check the response of the returned Validated Data")
       checkCommonResponseInsideUploadsField(response)
-      And("The status code is 200")
-      checkStatusCode(response, 200)
     }
   }
 
-  // TODO: Finish
   Feature("Charities - Get Upload Summary API - Testing all response variations") {
     Scenario("Testing the four variations of 'validationType' where one associate claimID is returned") {
       authToken

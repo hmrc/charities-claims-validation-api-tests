@@ -19,3 +19,7 @@ package uk.gov.hmrc.api.data.globals
 // The only valid types we are expecting for validationType in our payload
 enum ValidationType:
   case GiftAid, OtherIncome, CommunityBuildings, ConnectedCharities
+
+object ValidationType {
+  def fromString(str: String): Option[ValidationType] = ValidationType.values.find(_.toString == str)
+}
