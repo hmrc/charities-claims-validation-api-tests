@@ -19,7 +19,7 @@ package uk.gov.hmrc.api
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json, Reads, __}
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.data.globals.{FailureReason, FileStatus, ValidationType}
 import uk.gov.hmrc.api.data.GetUploadResultData
@@ -87,6 +87,24 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     if (fileStatus == FileStatus.VERIFICATION_FAILED) {
       failureDetailsExtraBodyInfo(response, failureReason)
     }
+  }
+
+  /** This could be refactored to extends checkCommonResponseBodies This method checks the same as above, ref, valType,
+    * fileStatus but inside a response that is wrapped in an array under the field "Uploads"
+    */
+  def checkCommonResponseInsideUploadsField(response: StandaloneWSResponse, expectedClaimsCount: Int = 1): Unit = {
+    val allData: Seq[JsValue] = (Json.parse(response.body) \ "uploads").asOpt[Seq[JsValue]].getOrElse(Seq.empty)
+
+    When("We find the 'uploads' array and then check each field is present")
+    allData.foreach { field =>
+      (field \ "reference").asOpt[String]      shouldBe defined
+      (field \ "validationType").asOpt[String] shouldBe defined
+      (field \ "fileStatus").asOpt[String]     shouldBe defined
+      ((field \ "uploadUrl").asOpt[String])      should (be(defined) or be(empty))
+    }
+
+    And("All claims are present")
+    allData.size shouldBe expectedClaimsCount
   }
 
   /** Claims that have fileStatus = AWAITING_UPLOAD will have additional fields in the response body */

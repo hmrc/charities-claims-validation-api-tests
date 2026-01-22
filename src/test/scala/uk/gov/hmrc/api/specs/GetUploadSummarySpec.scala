@@ -1,10 +1,9 @@
 package uk.gov.hmrc.api.specs
 
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.data.{CreateUploadTrackingData, CreateUpscanCallbackData, GetUploadSummaryData}
+import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadSummaryData}
 import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
 import uk.gov.hmrc.api.helpers.UploadTestDataHelper
-import uk.gov.hmrc.api.service.GetUploadSummaryService
 import uk.gov.hmrc.api.specs.tags.E2ETest
 
 class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
@@ -13,22 +12,35 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
     * expected
     */
   Feature("Charities - Get Upload Summary API - E2E") {
-    Scenario("Starting a GiftAid claim and providing valid data to Upscan", E2ETest) {
+    Scenario("Starting a OtherIncome claim and providing valid data to Upscan", E2ETest) {
       uploadTestData(
         authToken,
         claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
         validationType = ValidationType.OtherIncome
       )
-      Then("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
       createUpscanService.postSuccessfulPayloadObject(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
         CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = "Create-Upload-Tracking-ref",
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
           downloadUrl = GetUploadSummaryData.getSuccessfulFileLocations(ValidationType.OtherIncome),
           fileName = GetUploadSummaryData.getSuccessfulFileLocations(ValidationType.OtherIncome, false)
         ),
         authToken
       )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseInsideUploadsField(response)
+      And("The status code is 200")
+      checkStatusCode(response, 200)
     }
   }
 
