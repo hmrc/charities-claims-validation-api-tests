@@ -23,17 +23,16 @@ import uk.gov.hmrc.apitestrunner.http.HttpClient
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-class GetUploadResultService extends HttpClient {
+class GetUploadSummaryService extends HttpClient {
   val host: String     = TestEnvironment.url("Charities Claims Validation")
   val endpoint: String = "upload-results"
 
-  def getUploadResults(
+  def getUploadSummaryResults(
     claimId: String,
-    reference: String,
     token: String
   ): StandaloneWSResponse =
     Await.result(
-      mkRequest(s"$host/$claimId/$endpoint/$reference")
+      mkRequest(s"$host/$claimId/$endpoint")
         .withHttpHeaders(
           "Authorization" -> s"Bearer $token"
         )

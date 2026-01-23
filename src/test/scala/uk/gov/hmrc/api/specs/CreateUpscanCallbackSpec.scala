@@ -32,7 +32,7 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
       uploadTestData(authToken)
 
       Then("The CreateUpscanCallback Endpoint is sent a valid POST Request")
-      val payload  = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload
+      val payload  = CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayload()
       val response = createUpscanService.postSuccessfulPayloadObject(
         CreateUploadTrackingData.getValidClaimId,
         payload,

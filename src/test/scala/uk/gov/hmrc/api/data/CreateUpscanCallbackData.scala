@@ -30,29 +30,38 @@ object CreateUpscanCallbackData {
   private val FILE_STATUS_READY: String  = "READY"
   private val FILE_STATUS_FAILED: String = "FAILED"
 
+  /** The expected file type */
+  private val FILE_TYPE: String = "application/vnd.oasis.opendocument.spreadsheet"
+
   /** Common data that is used for the UpscanCallback for successful and failure types of request(s). These default
     * values will be used for testing purposes
     */
-  private val commonUploadDetailsUpscanCallback: UploadDetailsUpscanCallback = UploadDetailsUpscanCallback(
-    fileName = "test.pdf",
-    fileMimeType = "application/vnd.oasis.opendocument.spreadsheet",
+  def commonUploadDetailsUpscanCallback(
+    fileName: String = getDefaultFilename,
+    fileType: String = FILE_TYPE
+  ): UploadDetailsUpscanCallback = UploadDetailsUpscanCallback(
+    fileName = fileName,
+    fileMimeType = fileType,
     uploadTimestamp = "2018-04-24T09:30:00Z",
     checksum = "396f101dd52e8b2ace0dcf5ed09b1d1f030e608938510ce46e7a5c7a4e775100",
     size = 987
   )
 
   /** A valid Payload that should return a SUCCESS response, again providing some default values */
-  def getSuccessfulCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload =
+  def getSuccessfulCreateUpscanCallbackPayload(
+    downloadUrl: String = getDefaultUrl,
+    fileName: String = getDefaultFilename
+  ): CreateUpscanCallbackSuccessfulPayload =
     CreateUpscanCallbackSuccessfulPayload(
       reference = CreateUploadTrackingData.getValidReference,
-      downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
+      downloadUrl = downloadUrl,
       fileStatus = FILE_STATUS_READY,
-      uploadDetails = commonUploadDetailsUpscanCallback
+      uploadDetails = commonUploadDetailsUpscanCallback(fileName)
     )
 
   /** A valid Payload that should return a 400 response as the file type is wrong */
   def getInvalidFileTypeCreateUpscanCallbackPayload: CreateUpscanCallbackSuccessfulPayload = {
-    val differentMimeType = commonUploadDetailsUpscanCallback.copy(fileMimeType = "application/pdf")
+    val differentMimeType = commonUploadDetailsUpscanCallback(getDefaultFilename, fileType = "application/pdf")
 
     CreateUpscanCallbackSuccessfulPayload(
       reference = "f5da5578-8393-4cd1-be0e-d8ef1b78d8e8",
@@ -68,7 +77,7 @@ object CreateUpscanCallbackData {
       reference = CreateUploadTrackingData.getInvalidReference,
       downloadUrl = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676",
       fileStatus = FILE_STATUS_READY,
-      uploadDetails = commonUploadDetailsUpscanCallback
+      uploadDetails = commonUploadDetailsUpscanCallback()
     )
 
   /** Request body payload(s) that should result in FAILURE
@@ -90,22 +99,6 @@ object CreateUpscanCallbackData {
     failureReason = FailureReason.UNKNOWN.toString,
     message = FailureReason.UNKNOWN.getFailureMessage
   )
-
-  // No longer works if we want unique reference, come back and fix but for now doing the easy way
-  /** The "failureType" refers to "failureDetails", i.e., QUARANTINE (0), REJECTED (1), UNKNOWN (2) */
-//  def getFailedCreateUpscanCallbackPayload(failureType: Int): CreateUpscanCallbackFailedPayload = {
-//    val failureDetails = failureType match {
-//      case 0 => getQuarantinedFailureDetails
-//      case 1 => getRejectedFailureDetails
-//      case 2 => getUnknownFailureDetails
-//    }
-//
-//    CreateUpscanCallbackFailedPayload(
-//      reference = "reference",
-//      fileStatus = "FAILED",
-//      failureDetails = failureDetails
-//    )
-//  }
 
   /** Quick fix as the method above causes stackoverflow issues when overriding reference */
   def getQuarantineUpscanCallbackPayload(reference: String = getQuarantineRef): CreateUpscanCallbackFailedPayload =
@@ -132,8 +125,14 @@ object CreateUpscanCallbackData {
   /** Helpful methods for overriding default payloads useful for tests that use custom parameters, or we want to target
     * documents in the database that have been created by different API calls and will have unique id / ref
     */
-  def getSuccessfulCreateUpscanCallbackPayloadWithReference(reference: String): CreateUpscanCallbackSuccessfulPayload =
-    getSuccessfulCreateUpscanCallbackPayload.copy(reference = reference)
+  def getSuccessfulCreateUpscanCallbackPayloadWithReference(
+    reference: String,
+    downloadUrl: String = getDefaultUrl,
+    fileName: String = getDefaultFilename
+  ): CreateUpscanCallbackSuccessfulPayload = {
+    val differentReference = getSuccessfulCreateUpscanCallbackPayload(downloadUrl, fileName)
+    differentReference.copy(reference = reference)
+  }
 
   /** IDs and references used to update each claim to become each failure case, i.e.,
     *   - Quarantine
@@ -148,4 +147,10 @@ object CreateUpscanCallbackData {
   def getRejectedRef: String       = s"$API_NAME-${FailureReason.REJECTED.toString}-ref"
   def getUnknownClaimId: String    = s"$API_NAME-${FailureReason.UNKNOWN.toString}-claim"
   def getUnknownRef: String        = s"$API_NAME-${FailureReason.UNKNOWN.toString}-ref"
+
+  /** For these values we don't care about the actual value it just for passing generic Upscan Tests, however for file
+    * validation we want to override these with valid data
+    */
+  def getDefaultUrl: String      = "https://bucketName.s3.eu-west-2.amazonaws.com?1235676"
+  def getDefaultFilename: String = "default-filename"
 }

@@ -18,9 +18,10 @@ package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.api.BaseSpec
-import uk.gov.hmrc.api.data.CreateUploadTrackingData
+import uk.gov.hmrc.api.data.{CreateUploadTrackingData, GetUploadSummaryData}
 import uk.gov.hmrc.api.data.globals.ValidationType
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 /** Useful class for uploading data to the database that conveniently deletes the records after each test scenario
   * completes so we can run the test in automation without any interference / extra work / DB cleanup
@@ -61,6 +62,44 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     checkGenericResponseBodyAndStatusCode(response, responseCode = responseCode, responseSuccess = responseSuccess)
   }
 
+  /** An extension of uploadTestData but instead of creating and calling for individual claims, we just want to create
+    * four unique claims for each "validationType"
+    */
+  def uploadDataForAllClaims(
+    authToken: String,
+    giftAidID: String = GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+    otherIncomeID: String = GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+    communityBuildingsID: String = GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+    connectedCharitiesID: String = GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities)
+  ): Unit = {
+    uploadTestData(
+      authToken,
+      claimId = giftAidID,
+      reference = generateUniqueString()
+    )
+
+    uploadTestData(
+      authToken,
+      claimId = otherIncomeID,
+      reference = generateUniqueString(),
+      validationType = ValidationType.OtherIncome
+    )
+
+    uploadTestData(
+      authToken,
+      claimId = communityBuildingsID,
+      reference = generateUniqueString(),
+      validationType = ValidationType.CommunityBuildings
+    )
+
+    uploadTestData(
+      authToken,
+      claimId = connectedCharitiesID,
+      reference = generateUniqueString(),
+      validationType = ValidationType.ConnectedCharities
+    )
+  }
+
   override protected def afterEach(): Unit = {
     seeded.foreach { case (claimId, ref) =>
       try deleteSingleUploadService.deleteSingleUpload(claimId, ref, authHelper.bearerToken)
@@ -70,4 +109,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
 
     super.afterEach()
   }
+
+  /** Simply a helper method used to generate unique strings useful for simulating random IDs and references */
+  def generateUniqueString(length: Int = 16): String = Random.alphanumeric.take(length).mkString
 }
