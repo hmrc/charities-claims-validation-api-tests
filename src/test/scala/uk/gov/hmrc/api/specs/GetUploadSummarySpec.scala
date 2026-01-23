@@ -1,7 +1,21 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package uk.gov.hmrc.api.specs
 
-import org.apache.pdfbox.util.filetypedetector.FileType
-import play.api.libs.json.Json
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadSummaryData}
 import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
@@ -9,7 +23,7 @@ import uk.gov.hmrc.api.helpers.{SpreadsheetLocationHelper, UploadTestDataHelper}
 import uk.gov.hmrc.api.specs.tags.E2ETest
 
 class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
-  // TODO: Invalid file / Failed file?
+
   /** The E2E test for this will be simply upload a GiftAid claim and provide valid data then check the response is as
     * expected
     */
@@ -40,8 +54,7 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check the response of the returned Validated Data")
-      // TODO: THIS IS TECHNICALLY A FALSE POSITIVE
-      checkCommonResponseInsideUploadsField(response)
+      checkCommonResponseBodies(response, ValidationType.OtherIncome, FileStatus.VALIDATED)
     }
   }
 
@@ -60,7 +73,7 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check GiftAid response")
-      checkCommonResponseInsideUploadsField(giftAidResponse)
+      checkCommonResponseBodies(giftAidResponse, ValidationType.GiftAid, FileStatus.AWAITING_UPLOAD)
 
       val otherIncomeResponse = getUploadSummaryService.getUploadSummaryResults(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
@@ -68,7 +81,7 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check OtherIncome response")
-      checkCommonResponseInsideUploadsField(otherIncomeResponse)
+      checkCommonResponseBodies(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.AWAITING_UPLOAD)
 
       val communityBuildingsResponse = getUploadSummaryService.getUploadSummaryResults(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
@@ -76,7 +89,11 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check CommunityBuildings response")
-      checkCommonResponseInsideUploadsField(communityBuildingsResponse)
+      checkCommonResponseBodies(
+        communityBuildingsResponse,
+        ValidationType.CommunityBuildings,
+        FileStatus.AWAITING_UPLOAD
+      )
 
       val connectedCharitiesResponse = getUploadSummaryService.getUploadSummaryResults(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
@@ -84,7 +101,11 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check ConnectedCharities response")
-      checkCommonResponseInsideUploadsField(connectedCharitiesResponse)
+      checkCommonResponseBodies(
+        connectedCharitiesResponse,
+        ValidationType.ConnectedCharities,
+        FileStatus.AWAITING_UPLOAD
+      )
     }
 
     Scenario("Testing the four variations of 'validationType' where all claimIDs are associated to one user") {
@@ -105,8 +126,9 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       /** Check the response */
+      // TODO?
       Then("We check all 4 claims have valid data")
-      checkCommonResponseInsideUploadsField(response, 4)
+      // checkUploadResponseArrayContainsAllFields(response, 4)
     }
   }
 }

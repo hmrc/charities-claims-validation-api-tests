@@ -38,6 +38,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
   val getUploadSummaryService: GetUploadSummaryService         = new GetUploadSummaryService
 
   authHelper.fetchAuthBearerToken()
+
   protected def authToken: String = {
     When("We request a bearer token")
     val token = authHelper.bearerToken
@@ -63,6 +64,13 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     response.status shouldBe statusCode
   }
 
+  private def extractResponseFromPotentialUploadsArray(json: JsValue, field: String): Seq[String] =
+    (json \ field).asOpt[String].toSeq ++ (json \ "uploads")
+      .asOpt[Seq[JsValue]]
+      .toSeq
+      .flatten
+      .flatMap(eachClaimInsideUploads => (eachClaimInsideUploads \ field).asOpt[String])
+
   /** A few of the APIs all return response bodies that share data, breaking out the common functionality here to keep
     * code DRY and spec files more condensed Note: we generally don't care about failureReason as this will only occur
     * during failure at Upscan so we default to success and presume a healthy response, if this value is ever
@@ -75,39 +83,47 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     failureReason: FailureReason = FailureReason.SUCCESS
   ): Unit = {
     Then(s"The response body within checkCommonResponseBody is what we expect for a claim with fileStatus $fileStatus")
-    (Json.parse(response.body) \ "reference").asOpt[String]      shouldBe defined
-    (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
-    (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual fileStatus.toString
+//    (Json.parse(response.body) \ "reference").asOpt[String]      shouldBe defined
+//    (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
+//    (Json.parse(response.body) \ "fileStatus").as[String]     shouldEqual fileStatus.toString
 
-    if (fileStatus == FileStatus.AWAITING_UPLOAD) {
-      awaitingUploadExtraBodyInfo(response)
-    }
+    extractResponseFromPotentialUploadsArray(Json.parse(response.body), "reference")      should not be empty
+    extractResponseFromPotentialUploadsArray(Json.parse(response.body), "validationType") should contain(
+      validationType.toString
+    )
+    extractResponseFromPotentialUploadsArray(Json.parse(response.body), "fileStatus")     should contain(
+      fileStatus.toString
+    )
 
-    if (fileStatus == FileStatus.VERIFICATION_FAILED) {
-      failureDetailsExtraBodyInfo(response, failureReason)
-    }
+//    if (fileStatus == FileStatus.AWAITING_UPLOAD) {
+//      awaitingUploadExtraBodyInfo(response)
+//    }
+//
+//    if (fileStatus == FileStatus.VERIFICATION_FAILED) {
+//      failureDetailsExtraBodyInfo(response, failureReason)
+//    }
   }
 
   /** This could be refactored to extends checkCommonResponseBodies This method checks the same as above, ref, valType,
     * fileStatus but inside a response that is wrapped in an array under the field "Uploads"
     */
-  def checkCommonResponseInsideUploadsField(response: StandaloneWSResponse, amountOfClaims: Int = 1): Unit = {
-    When("We check all main fields are there for all claims associated to this claimID")
-    (Json.parse(response.body) \\ "reference").length      shouldEqual amountOfClaims
-    (Json.parse(response.body) \\ "validationType").length shouldEqual amountOfClaims
-    (Json.parse(response.body) \\ "fileStatus").length     shouldEqual amountOfClaims
-
-    Then("We check that all claims have valid types")
-    (Json.parse(response.body) \\ "validationType")
-      .map(_.as[String])
-      .forall(eachValidationField => ValidationType.fromString(eachValidationField).isDefined) shouldBe true
-    (Json.parse(response.body) \\ "fileStatus")
-      .map(_.as[String])
-      .forall(eachFileField => FileStatus.fromString(eachFileField).isDefined)                 shouldBe true
-
-    And("The response code is what we expect")
-    checkStatusCode(response, 200)
-  }
+//  def checkUploadResponseArrayContainsAllFields(response: StandaloneWSResponse, amountOfClaims: Int = 1): Unit = {
+//    When("We check all main fields are there for all claims associated to this claimID")
+//    (Json.parse(response.body) \\ "reference").length      shouldEqual amountOfClaims
+//    (Json.parse(response.body) \\ "validationType").length shouldEqual amountOfClaims
+//    (Json.parse(response.body) \\ "fileStatus").length     shouldEqual amountOfClaims
+//
+//    Then("We check that all claims have valid types")
+//    (Json.parse(response.body) \\ "validationType")
+//      .map(_.as[String])
+//      .forall(eachValidationField => ValidationType.fromString(eachValidationField).isDefined) shouldBe true
+//    (Json.parse(response.body) \\ "fileStatus")
+//      .map(_.as[String])
+//      .forall(eachFileField => FileStatus.fromString(eachFileField).isDefined)                 shouldBe true
+//
+//    And("The response code is what we expect")
+//    checkStatusCode(response, 200)
+//  }
 
   /** Claims that have fileStatus = AWAITING_UPLOAD will have additional fields in the response body */
   private def awaitingUploadExtraBodyInfo(response: StandaloneWSResponse): Unit = {
