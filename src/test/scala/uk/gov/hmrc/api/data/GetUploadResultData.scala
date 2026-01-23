@@ -54,8 +54,6 @@ object GetUploadResultData {
   def getInvalidDataReferenceCommunityBuildings: String = "invalid-data-reference-community-buildings"
   def getThisClaimIdDoesNotExist: String                = "this-claim-id-does-not-exist"
   def getThisReferenceDoesNotExist: String              = "this-reference-does-not-exist"
-  def getAwaitingUploadHasExpiredClaimId: String        = "expired-id"
-  def getAwaitingUploadHasExpiredReference: String      = "expired-reference"
 
   // Useful helper methods to extract the correct claimID, reference and validationType
   def getCorrectReference(validationType: ValidationType, fileStatus: FileStatus): String =

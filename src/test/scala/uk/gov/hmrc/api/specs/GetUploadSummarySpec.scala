@@ -73,7 +73,12 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check GiftAid response")
-      checkCommonResponseBodies(giftAidResponse, ValidationType.GiftAid, FileStatus.AWAITING_UPLOAD)
+      checkCommonResponseBodies(
+        giftAidResponse,
+        ValidationType.GiftAid,
+        FileStatus.AWAITING_UPLOAD,
+        isWrappedByUploadsArray = true
+      )
 
       val otherIncomeResponse = getUploadSummaryService.getUploadSummaryResults(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
@@ -81,7 +86,12 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check OtherIncome response")
-      checkCommonResponseBodies(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.AWAITING_UPLOAD)
+      checkCommonResponseBodies(
+        otherIncomeResponse,
+        ValidationType.OtherIncome,
+        FileStatus.AWAITING_UPLOAD,
+        isWrappedByUploadsArray = true
+      )
 
       val communityBuildingsResponse = getUploadSummaryService.getUploadSummaryResults(
         GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
@@ -92,7 +102,8 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       checkCommonResponseBodies(
         communityBuildingsResponse,
         ValidationType.CommunityBuildings,
-        FileStatus.AWAITING_UPLOAD
+        FileStatus.AWAITING_UPLOAD,
+        isWrappedByUploadsArray = true
       )
 
       val connectedCharitiesResponse = getUploadSummaryService.getUploadSummaryResults(
@@ -104,7 +115,8 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       checkCommonResponseBodies(
         connectedCharitiesResponse,
         ValidationType.ConnectedCharities,
-        FileStatus.AWAITING_UPLOAD
+        FileStatus.AWAITING_UPLOAD,
+        isWrappedByUploadsArray = true
       )
     }
 

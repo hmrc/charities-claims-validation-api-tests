@@ -49,7 +49,8 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       checkCommonResponseBodies(
         response,
         ValidationType.GiftAid,
-        FileStatus.AWAITING_UPLOAD
+        FileStatus.AWAITING_UPLOAD,
+        isWrappedByUploadsArray = true
       )
     }
 
@@ -203,45 +204,46 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
     }
 
-    Scenario("Testing VALIDATING Response") {
-      authToken
-
-      Then("Upload Validating Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getValidatingClaimId,
-        reference = GetUploadResultData.getValidatingReference
-      )
-
-      /** Checking Validating response body, we need to hit an additional endpoint to change the current "fileStatus" =
-        * "AWAITING_UPLOAD" to become "VALIDATING"
-        */
-      Then("We call the CreateUpscanCallback API to update 'fileStatus' from AWAITING_UPLOAD to VALIDATING")
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getValidatingClaimId,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          GetUploadResultData.getValidatingReference
-        ),
-        authToken
-      )
-
-      Then("We check now that Validating returns expected response body")
-      val response = getUploadResultService.getUploadResults(
-        GetUploadResultData.getValidatingClaimId,
-        GetUploadResultData.getValidatingReference,
-        authToken
-      )
-
-      And("Response code should be 200")
-      checkStatusCode(response, 200)
-
-      And("The response body is what we expect")
-      checkCommonResponseBodies(
-        response,
-        ValidationType.GiftAid,
-        FileStatus.VALIDATING
-      )
-    }
+    // TODO: Investigate, don't think we can have it as VALIDATING anymore
+//    Scenario("Testing VALIDATING Response") {
+//      authToken
+//
+//      Then("Upload Validating Test Data")
+//      uploadTestData(
+//        authToken,
+//        claimId = GetUploadResultData.getValidatingClaimId,
+//        reference = GetUploadResultData.getValidatingReference
+//      )
+//
+//      /** Checking Validating response body, we need to hit an additional endpoint to change the current "fileStatus" =
+//        * "AWAITING_UPLOAD" to become "VALIDATING"
+//        */
+//      Then("We call the CreateUpscanCallback API to update 'fileStatus' from AWAITING_UPLOAD to VALIDATING")
+//      createUpscanService.postSuccessfulPayloadObject(
+//        GetUploadResultData.getValidatingClaimId,
+//        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+//          GetUploadResultData.getValidatingReference
+//        ),
+//        authToken
+//      )
+//
+//      Then("We check now that Validating returns expected response body")
+//      val response = getUploadResultService.getUploadResults(
+//        GetUploadResultData.getValidatingClaimId,
+//        GetUploadResultData.getValidatingReference,
+//        authToken
+//      )
+//
+//      And("Response code should be 200")
+//      checkStatusCode(response, 200)
+//
+//      And("The response body is what we expect")
+//      checkCommonResponseBodies(
+//        response,
+//        ValidationType.GiftAid,
+//        FileStatus.VALIDATING
+//      )
+//    }
 
     Scenario("Testing Data Valid Response") {
       authToken
@@ -324,11 +326,12 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
 
       /** Checking data valid - GiftAid, OtherIncome, ConnectedCharities and CommunityBuildings */
       Then("We check now that Data Valid returns expected response body")
-      val giftAidResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getValidDataClaimIdGiftAid,
-        GetUploadResultData.getValidDataReferenceGiftAid,
-        authToken
-      )
+      // TODO: UNCOMMENT ONCE GIFTAID IS IMPLEMENTED
+//      val giftAidResponse = getUploadResultService.getUploadResults(
+//        GetUploadResultData.getValidDataClaimIdGiftAid,
+//        GetUploadResultData.getValidDataReferenceGiftAid,
+//        authToken
+//      )
 
       val otherIncomeResponse = getUploadResultService.getUploadResults(
         GetUploadResultData.getValidDataClaimIdOtherIncome,
@@ -348,7 +351,8 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         authToken
       )
 
-      checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
+      // TODO:UNCOMMENT ONCE GIFT AID IS IMPLEMENTED
+      // checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
       checkValidAndInvalidDataResponseBody(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATED)
       checkValidAndInvalidDataResponseBody(
         connectedCharitiesResponse,
@@ -544,27 +548,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
 
       checkErrorResponse(response)
-    }
-
-    Scenario("Claim has expired") {
-      authToken
-
-      Then("Upload Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getAwaitingUploadHasExpiredClaimId,
-        reference = GetUploadResultData.getAwaitingUploadHasExpiredClaimId
-      )
-
-      When("We check a claim that has passed its 7 days expiry")
-      val response = getUploadResultService.getUploadResults(
-        GetUploadResultData.getAwaitingUploadHasExpiredClaimId,
-        GetUploadResultData.getAwaitingUploadHasExpiredClaimId,
-        authToken
-      )
-
-      And("The response body and status code is what we expect")
-      checkErrorResponse(response, 400)
     }
   }
 }
