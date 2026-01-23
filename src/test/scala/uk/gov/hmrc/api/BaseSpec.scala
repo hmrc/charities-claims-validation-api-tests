@@ -141,9 +141,9 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     validationType: ValidationType,
     fileStatus: FileStatus
   ): Unit = {
-    val reference  = GetUploadResultData.getCorrectReference(validationType, fileStatus)
-    //TODO: Again waiting implementation from devs
-    //val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
+    val reference = GetUploadResultData.getCorrectReference(validationType, fileStatus)
+    // TODO: Again waiting implementation from devs
+    // val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
     (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference

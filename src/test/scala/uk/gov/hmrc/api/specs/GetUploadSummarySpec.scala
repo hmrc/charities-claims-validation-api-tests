@@ -54,7 +54,12 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
       )
 
       Then("We check the response of the returned Validated Data")
-      checkCommonResponseBodies(response, ValidationType.OtherIncome, FileStatus.VALIDATED)
+      checkCommonResponseBodies(
+        response,
+        ValidationType.OtherIncome,
+        FileStatus.VALIDATED,
+        isWrappedByUploadsArray = true
+      )
     }
   }
 
@@ -118,29 +123,6 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
         FileStatus.AWAITING_UPLOAD,
         isWrappedByUploadsArray = true
       )
-    }
-
-    Scenario("Testing the four variations of 'validationType' where all claimIDs are associated to one user") {
-
-      /** Successfully update the test data for one user */
-      When("We upload the test data")
-      uploadDataForAllClaims(
-        authToken,
-        giftAidID = GetUploadSummaryData.getGroupOfClaimsID,
-        otherIncomeID = GetUploadSummaryData.getGroupOfClaimsID,
-        communityBuildingsID = GetUploadSummaryData.getGroupOfClaimsID,
-        connectedCharitiesID = GetUploadSummaryData.getGroupOfClaimsID
-      )
-
-      val response = getUploadSummaryService.getUploadSummaryResults(
-        GetUploadSummaryData.getGroupOfClaimsID,
-        authToken
-      )
-
-      /** Check the response */
-      // TODO?
-      Then("We check all 4 claims have valid data")
-      // checkUploadResponseArrayContainsAllFields(response, 4)
     }
   }
 }
