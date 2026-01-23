@@ -12,15 +12,4 @@ object GetUploadSummaryData {
   def getGroupOfClaimsID: String                                     = s"group-claim-id"
   def getThisClaimIdDoesNotExist: String                             = "this-claim-id-does-not-exist"
   def getThisClaimHasExpiredID: String                               = "this-claim-has-expired"
-
-  /** File paths to the local successful spreadsheet uploads */
-  def getSuccessfulFileLocations(validationType: ValidationType, fileLocation: Boolean = true): String =
-    validationType match {
-      case ValidationType.OtherIncome =>
-        if (fileLocation) {
-          "file:/home/kyle/documents/charities-claims-validation-api-tests/src/test/resources/spreadsheets/OtherIncome/other_income_schedule-GoodData.ods"
-        } else {
-          "other_income_schedule-GoodData.ods"
-        }
-    }
 }

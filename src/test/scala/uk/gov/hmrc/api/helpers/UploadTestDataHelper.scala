@@ -53,7 +53,7 @@ trait UploadTestDataHelper extends BeforeAndAfterEach { self: BaseSpec =>
     /** Add the data to seeded to be cleaned up after the test has executed by calling delete endpoint with the claimId
       * and reference provided
       */
-    seeded += ((claimId, reference))
+    //seeded += ((claimId, reference))
 
     /** In most cases the successful upload of test data will result in a 201 status code. It is unnecessary to repeat
       * this check everywhere we upload data as we want to keep code DRY and spec files smaller by doing it here. There
