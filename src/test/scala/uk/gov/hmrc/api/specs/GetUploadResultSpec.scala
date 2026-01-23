@@ -204,47 +204,6 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
     }
 
-    // TODO: Investigate, don't think we can have it as VALIDATING anymore
-//    Scenario("Testing VALIDATING Response") {
-//      authToken
-//
-//      Then("Upload Validating Test Data")
-//      uploadTestData(
-//        authToken,
-//        claimId = GetUploadResultData.getValidatingClaimId,
-//        reference = GetUploadResultData.getValidatingReference
-//      )
-//
-//      /** Checking Validating response body, we need to hit an additional endpoint to change the current "fileStatus" =
-//        * "AWAITING_UPLOAD" to become "VALIDATING"
-//        */
-//      Then("We call the CreateUpscanCallback API to update 'fileStatus' from AWAITING_UPLOAD to VALIDATING")
-//      createUpscanService.postSuccessfulPayloadObject(
-//        GetUploadResultData.getValidatingClaimId,
-//        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-//          GetUploadResultData.getValidatingReference
-//        ),
-//        authToken
-//      )
-//
-//      Then("We check now that Validating returns expected response body")
-//      val response = getUploadResultService.getUploadResults(
-//        GetUploadResultData.getValidatingClaimId,
-//        GetUploadResultData.getValidatingReference,
-//        authToken
-//      )
-//
-//      And("Response code should be 200")
-//      checkStatusCode(response, 200)
-//
-//      And("The response body is what we expect")
-//      checkCommonResponseBodies(
-//        response,
-//        ValidationType.GiftAid,
-//        FileStatus.VALIDATING
-//      )
-//    }
-
     Scenario("Testing Data Valid Response") {
       authToken
 
