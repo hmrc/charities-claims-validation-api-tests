@@ -17,11 +17,9 @@
 package uk.gov.hmrc.api.helpers
 
 import org.scalatest.BeforeAndAfterEach
-import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.{CreateUploadTrackingData, GetUploadSummaryData}
-import uk.gov.hmrc.api.data.globals.{FileStatus, ValidationType}
-
+import uk.gov.hmrc.api.data.globals.ValidationType
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 

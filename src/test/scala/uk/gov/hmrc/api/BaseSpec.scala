@@ -19,7 +19,7 @@ package uk.gov.hmrc.api
 import org.scalatest.featurespec.AnyFeatureSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.{BeforeAndAfterEach, GivenWhenThen}
-import play.api.libs.json.{JsValue, Json, Reads, __}
+import play.api.libs.json.{JsValue, Json, Reads}
 import play.api.libs.ws.StandaloneWSResponse
 import uk.gov.hmrc.api.data.globals.{FailureReason, FileStatus, ValidationType}
 import uk.gov.hmrc.api.data.GetUploadResultData
@@ -142,7 +142,8 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     fileStatus: FileStatus
   ): Unit = {
     val reference  = GetUploadResultData.getCorrectReference(validationType, fileStatus)
-    val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
+    //TODO: Again waiting implementation from devs
+    //val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
     (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
