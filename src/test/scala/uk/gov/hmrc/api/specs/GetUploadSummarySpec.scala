@@ -27,42 +27,41 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
   /** The E2E test for this will be simply upload a GiftAid claim and provide valid data then check the response is as
     * expected
     */
-  // TODO: WILL FIX ONCE MERGED AS I NEED THE DIFF SPREADSHEETS SAVED BY NISH
-//  Feature("Charities - Get Upload Summary API - E2E") {
-//    Scenario("Starting a OtherIncome claim and providing valid data to Upscan", E2ETest) {
-//      uploadTestData(
-//        authToken,
-//        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
-//        reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
-//        validationType = ValidationType.OtherIncome
-//      )
-//
-//      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
-//      createUpscanService.postSuccessfulPayloadObject(
-//        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
-//        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-//          reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
-//          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.OtherIncome),
-//          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.OtherIncome)
-//        ),
-//        authToken
-//      )
-//
-//      Then("We call the GetUploadSummary API")
-//      val response = getUploadSummaryService.getUploadSummaryResults(
-//        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
-//        authToken
-//      )
-//
-//      Then("We check the response of the returned Validated Data")
-//      checkCommonResponseBodies(
-//        response,
-//        ValidationType.OtherIncome,
-//        FileStatus.VALIDATED,
-//        isWrappedByUploadsArray = true
-//      )
-//    }
-//  }
+  Feature("Charities - Get Upload Summary API - E2E") {
+    Scenario("Starting a OtherIncome claim and providing valid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
+        validationType = ValidationType.OtherIncome
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.OtherIncome),
+          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.OtherIncome)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.OtherIncome,
+        FileStatus.VALIDATED,
+        isWrappedByUploadsArray = true
+      )
+    }
+  }
 
   Feature("Charities - Get Upload Summary API - Testing all response variations") {
     Scenario("Testing the four variations of 'validationType' where one associate claimID is returned") {
