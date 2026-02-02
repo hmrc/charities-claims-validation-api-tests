@@ -1,0 +1,9 @@
+{
+  "add": [
+    {
+      "reason": "This is an API-only service and is not rendered by browsers. The X-Content-Type-Options header mitigates browser MIME-sniffing risks, which are not applicable in this context.",
+      "ruleId": 10021,
+      "action": "IGNORE"
+    }
+  ]
+}
