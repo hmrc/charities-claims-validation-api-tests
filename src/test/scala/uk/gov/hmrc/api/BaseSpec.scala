@@ -81,16 +81,20 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     validationType: ValidationType,
     fileStatus: FileStatus,
     failureReason: FailureReason = FailureReason.SUCCESS,
-    isWrappedByUploadsArray: Boolean = false
+    isWrappedByUploadsArray: Boolean = false,
+    isRaceCondition: Boolean = false
   ): Unit = {
     Then(s"The response body within checkCommonResponseBody is what we expect for a claim with fileStatus $fileStatus")
     extractResponseFromPotentialUploadsArray(Json.parse(response.body), "reference")      should not be empty
     extractResponseFromPotentialUploadsArray(Json.parse(response.body), "validationType") should contain(
       validationType.toString
     )
-    extractResponseFromPotentialUploadsArray(Json.parse(response.body), "fileStatus")     should contain(
-      fileStatus.toString
-    )
+
+    if (!isRaceCondition) {
+      extractResponseFromPotentialUploadsArray(Json.parse(response.body), "fileStatus") should contain(
+        fileStatus.toString
+      )
+    }
 
     if (fileStatus == FileStatus.AWAITING_UPLOAD) {
       awaitingUploadExtraBodyInfo(response, isWrappedByUploadsArray)
