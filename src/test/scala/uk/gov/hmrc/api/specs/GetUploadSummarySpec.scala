@@ -58,7 +58,8 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
         response,
         ValidationType.OtherIncome,
         FileStatus.VALIDATED,
-        isWrappedByUploadsArray = true
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
       )
     }
   }
