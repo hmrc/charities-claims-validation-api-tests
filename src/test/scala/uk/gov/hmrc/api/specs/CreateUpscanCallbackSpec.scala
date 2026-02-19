@@ -128,8 +128,8 @@ class CreateUpscanCallbackSpec extends BaseSpec with UploadTestDataHelper {
         authHelper.bearerToken
       )
 
-      Then("A 400 status code should be returned")
-      checkStatusCode(response, 400)
+      Then("A 404 status code should be returned")
+      checkStatusCode(response, 404)
     }
 
     Scenario("Send a successful payload with a reference that does not exist") {

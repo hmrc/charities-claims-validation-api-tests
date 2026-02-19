@@ -23,7 +23,8 @@ case class CreateUploadTrackingPayload(
   reference: String,
   validationType: String,
   uploadUrl: String,
-  initiateTimestamp: String
+  initiateTimestamp: String,
+  fields: Map[String, String]
 )
 
 object CreateUploadTrackingPayload {
