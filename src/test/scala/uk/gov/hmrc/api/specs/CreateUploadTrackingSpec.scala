@@ -62,7 +62,7 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
       checkGenericResponseBodyAndStatusCode(response, responseCode = 400, responseSuccess = false)
     }
 
-    Scenario("The 'validationType' is a duplicate for this claimID") {
+    Scenario("The 'validationType' is a duplicate for this claimID with same reference") {
       Given("There is an Auth Token and it's valid")
       authToken
 
@@ -72,8 +72,8 @@ class CreateUploadTrackingSpec extends BaseSpec with UploadTestDataHelper {
       )
       uploadTestData(authToken)
 
-      Then("A 500 response code is returned as 'validationType' is a duplicate of an existing claim already made")
-      uploadTestData(authToken, responseCode = 500, responseSuccess = false)
+      Then("A 201 response code is returned as 'validationType' and reference already exists")
+      uploadTestData(authToken)
     }
   }
 }

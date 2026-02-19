@@ -28,7 +28,15 @@ object CreateUploadTrackingData {
     reference = getValidReference,
     validationType = ValidationType.GiftAid.toString,
     uploadUrl = "https://xxxx/upscan-upload-proxy/bucketName",
-    initiateTimestamp = "2025-11-30T06:49:19.571Z"
+    initiateTimestamp = "2025-11-30T06:49:19.571Z",
+    fields = Map(
+      "acl"              -> "private",
+      "key"              -> "11370e18-6e24-453e-b45a-76d3e32ea33d",
+      "policy"           -> "xxxxxxxx==",
+      "x-amz-algorithm"  -> "AWS4-HMAC-SHA256",
+      "x-amz-credential" -> "ASIAxxxxxxxxx/20180202/eu-west-2/s3/aws4_request",
+      "x-amz-date"       -> "yyyyMMddThhmmssZ"
+    )
   )
 
   /** A payload that should fail due to having an invalid "validationType" must be one of the following
@@ -41,7 +49,8 @@ object CreateUploadTrackingData {
     reference = getInvalidReference,
     validationType = "Validation",
     uploadUrl = "https://xxxx/upscan-upload-proxy/bucketName",
-    initiateTimestamp = "2025-11-30T06:49:19.571Z"
+    initiateTimestamp = "2025-11-30T06:49:19.571Z",
+    fields = Map.empty
   )
 
   //  Some helpful methods to allow us to override the default payload for more customizable DB data uploads
