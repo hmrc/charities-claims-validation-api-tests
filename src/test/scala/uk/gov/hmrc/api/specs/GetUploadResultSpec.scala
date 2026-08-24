@@ -18,12 +18,13 @@ package uk.gov.hmrc.api.specs
 
 import uk.gov.hmrc.api.BaseSpec
 import uk.gov.hmrc.api.data.globals.{FailureReason, FileStatus, ValidationType}
-import uk.gov.hmrc.api.helpers.{SpreadsheetLocationHelper, UploadTestDataHelper}
+import uk.gov.hmrc.api.helpers.UploadTestDataHelper
 import uk.gov.hmrc.api.data.{CreateUpscanCallbackData, GetUploadResultData, UpdateUploadStatusData}
+import uk.gov.hmrc.api.specs.tags.E2ETest
 
 class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
   Feature("Charities - Get Upload Result API - All successful response bodies") {
-    Scenario("Testing Awaiting Upload Response") {
+    Scenario("Testing Awaiting Upload Response", E2ETest) {
       authToken
 
       Then("Upload AwaitingUpload Test Data")
@@ -54,7 +55,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
     }
 
-    Scenario("Testing Verifying Response") {
+    Scenario("Testing Verifying Response", E2ETest) {
       authToken
 
       /** We have a valid auth token so now upload the test data to the DB */
@@ -93,7 +94,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       )
     }
 
-    Scenario("Testing VERIFICATION_FAILED response body") {
+    Scenario("Testing VERIFICATION_FAILED response body", E2ETest) {
       authToken
 
       /** We have the auth token so upload the test data for all types of VERIFICATION_FAILED
@@ -203,250 +204,10 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
         failureReason = FailureReason.UNKNOWN
       )
     }
-
-    Scenario("Testing Data Valid Response") {
-      authToken
-
-      Then("Upload GiftAid DataValid Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getValidDataClaimIdGiftAid,
-        reference = GetUploadResultData.getValidDataReferenceGiftAid,
-        validationType = ValidationType.GiftAid
-      )
-
-      Then("Upload OtherIncome DataValid Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getValidDataClaimIdOtherIncome,
-        reference = GetUploadResultData.getValidDataReferenceOtherIncome,
-        validationType = ValidationType.OtherIncome
-      )
-
-      Then("Upload ConnectedCharities DataValid Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getValidDataClaimIdConnectedCharities,
-        reference = GetUploadResultData.getValidDataReferenceConnectedCharities,
-        validationType = ValidationType.ConnectedCharities
-      )
-
-      Then("Upload CommunityBuildings DataValid Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getValidDataClaimIdCommunityBuildings,
-        reference = GetUploadResultData.getValidDataReferenceCommunityBuildings,
-        validationType = ValidationType.CommunityBuildings
-      )
-
-      /** We need to hit an additional endpoint to change the current "fileStatus" = "AWAITING_UPLOAD" to become
-        * "VALIDATED" Doing this for GiftAid, OtherIncome, CommunityBuildings and ConnectedCharities
-        */
-      Then("We validate a spreadsheet to update 'fileStatus' from AWAITING_UPLOAD to VALIDATED")
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getValidDataClaimIdGiftAid,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getValidDataReferenceGiftAid,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.GiftAid),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.GiftAid)
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getValidDataClaimIdOtherIncome,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getValidDataReferenceOtherIncome,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.OtherIncome),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.OtherIncome)
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getValidDataClaimIdCommunityBuildings,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getValidDataReferenceCommunityBuildings,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.CommunityBuildings),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.CommunityBuildings)
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getValidDataClaimIdConnectedCharities,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getValidDataReferenceConnectedCharities,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.ConnectedCharities),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.ConnectedCharities)
-        ),
-        authToken
-      )
-
-      /** Checking data valid - GiftAid, OtherIncome, ConnectedCharities and CommunityBuildings */
-      Then("We check now that Data Valid returns expected response body")
-      // TODO: UNCOMMENT ONCE GIFTAID IS IMPLEMENTED
-//      val giftAidResponse = getUploadResultService.getUploadResults(
-//        GetUploadResultData.getValidDataClaimIdGiftAid,
-//        GetUploadResultData.getValidDataReferenceGiftAid,
-//        authToken
-//      )
-
-      val otherIncomeResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getValidDataClaimIdOtherIncome,
-        GetUploadResultData.getValidDataReferenceOtherIncome,
-        authToken
-      )
-
-      val connectedCharitiesResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getValidDataClaimIdConnectedCharities,
-        GetUploadResultData.getValidDataReferenceConnectedCharities,
-        authToken
-      )
-
-      val communityBuildingResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getValidDataClaimIdCommunityBuildings,
-        GetUploadResultData.getValidDataReferenceCommunityBuildings,
-        authToken
-      )
-
-      // TODO:UNCOMMENT ONCE GIFT AID IS IMPLEMENTED
-      // checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATED)
-      checkValidAndInvalidDataResponseBody(otherIncomeResponse, ValidationType.OtherIncome, FileStatus.VALIDATED)
-      checkValidAndInvalidDataResponseBody(
-        connectedCharitiesResponse,
-        ValidationType.ConnectedCharities,
-        FileStatus.VALIDATED
-      )
-      checkValidAndInvalidDataResponseBody(
-        communityBuildingResponse,
-        ValidationType.CommunityBuildings,
-        FileStatus.VALIDATED
-      )
-    }
-
-    Scenario("Testing Invalid Data Response") {
-      authToken
-
-      Then("Upload GiftAid InvalidData Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getInvalidDataClaimIdGiftAid,
-        reference = GetUploadResultData.getInvalidDataReferenceGiftAid,
-        validationType = ValidationType.GiftAid
-      )
-
-      Then("Upload OtherIncome InvalidData Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getInvalidDataClaimIdOtherIncome,
-        reference = GetUploadResultData.getInvalidDataReferenceOtherIncome,
-        validationType = ValidationType.OtherIncome
-      )
-
-      Then("Upload ConnectedCharities InvalidData Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getInvalidDataClaimIdConnectedCharities,
-        reference = GetUploadResultData.getInvalidDataReferenceConnectedCharities,
-        validationType = ValidationType.ConnectedCharities
-      )
-
-      Then("Upload CommunityBuilding InvalidData Test Data")
-      uploadTestData(
-        authToken,
-        claimId = GetUploadResultData.getInvalidDataClaimIdCommunityBuildings,
-        reference = GetUploadResultData.getInvalidDataReferenceCommunityBuildings,
-        validationType = ValidationType.CommunityBuildings
-      )
-
-      /** Now we hit upscan with invalid spreadsheets to turn the fileStatus = "VALIDATION_FAILED" */
-      Then("We validate a spreadsheet to update 'fileStatus' from AWAITING_UPLOAD to VALIDATED")
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getInvalidDataClaimIdGiftAid,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getInvalidDataReferenceGiftAid,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.GiftAid, "BadData"),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.GiftAid, "BadData")
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getInvalidDataClaimIdOtherIncome,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getInvalidDataReferenceOtherIncome,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.OtherIncome, "BadData"),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.OtherIncome, "BadData")
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getInvalidDataClaimIdCommunityBuildings,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getInvalidDataReferenceCommunityBuildings,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.CommunityBuildings, "BadData"),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.CommunityBuildings, "BadData")
-        ),
-        authToken
-      )
-
-      createUpscanService.postSuccessfulPayloadObject(
-        GetUploadResultData.getInvalidDataClaimIdConnectedCharities,
-        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
-          reference = GetUploadResultData.getInvalidDataReferenceConnectedCharities,
-          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.ConnectedCharities, "BadData"),
-          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.ConnectedCharities, "BadData")
-        ),
-        authToken
-      )
-
-      val giftAidResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getInvalidDataClaimIdGiftAid,
-        GetUploadResultData.getInvalidDataReferenceGiftAid,
-        authToken
-      )
-
-      val otherIncomeResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getInvalidDataClaimIdOtherIncome,
-        GetUploadResultData.getInvalidDataReferenceOtherIncome,
-        authToken
-      )
-
-      val connectedCharitiesResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getInvalidDataClaimIdConnectedCharities,
-        GetUploadResultData.getInvalidDataReferenceConnectedCharities,
-        authToken
-      )
-
-      val communityBuildingResponse = getUploadResultService.getUploadResults(
-        GetUploadResultData.getInvalidDataClaimIdCommunityBuildings,
-        GetUploadResultData.getInvalidDataReferenceCommunityBuildings,
-        authToken
-      )
-
-      checkValidAndInvalidDataResponseBody(giftAidResponse, ValidationType.GiftAid, FileStatus.VALIDATION_FAILED)
-      checkValidAndInvalidDataResponseBody(
-        otherIncomeResponse,
-        ValidationType.OtherIncome,
-        FileStatus.VALIDATION_FAILED
-      )
-      checkValidAndInvalidDataResponseBody(
-        connectedCharitiesResponse,
-        ValidationType.ConnectedCharities,
-        FileStatus.VALIDATION_FAILED
-      )
-      checkValidAndInvalidDataResponseBody(
-        communityBuildingResponse,
-        ValidationType.CommunityBuildings,
-        FileStatus.VALIDATION_FAILED
-      )
-    }
   }
 
   Feature("Charities - Get Upload Result API - Failed Response Bodies") {
-    Scenario("Request reference for given claimID is not found") {
+    Scenario("Request reference for given claimID is not found", E2ETest) {
       authToken
 
       Then("Upload Test Data")
@@ -467,7 +228,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       checkErrorResponse(response)
     }
 
-    Scenario("Request claimID is not found") {
+    Scenario("Request claimID is not found", E2ETest) {
       authToken
 
       Then("Upload Test Data")
@@ -488,7 +249,7 @@ class GetUploadResultSpec extends BaseSpec with UploadTestDataHelper {
       checkErrorResponse(response)
     }
 
-    Scenario("Request claimID and reference not found") {
+    Scenario("Request claimID and reference not found", E2ETest) {
       authToken
 
       Then("Upload Test Data")
