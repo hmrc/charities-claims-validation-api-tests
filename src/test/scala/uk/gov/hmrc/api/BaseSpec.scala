@@ -153,7 +153,7 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
     (Json.parse(response.body) \ "fileStatus")
       .as[String]                                                  should (be(FileStatus.VALIDATED.toString) or be(FileStatus.VALIDATION_FAILED.toString))
-    (Json.parse(response.body) \ typeOfData).asOpt[String] shouldBe defined
+    (Json.parse(response.body) \ typeOfData).asOpt[String]       shouldBe defined
 
     if (fileStatus == FileStatus.VALIDATION_FAILED) {
       And("We have invalid data so an additional check for errors")
