@@ -17,7 +17,7 @@
 package uk.gov.hmrc.api.data.globals
 
 enum FileStatus:
-  case AWAITING_UPLOAD, VERIFYING, VERIFICATION_FAILED, VALIDATING, VALIDATED, VALIDATION_FAILED
+  case AWAITING_UPLOAD, VERIFYING, VERIFICATION_FAILED, VALIDATED, VALIDATION_FAILED
 
 object FileStatus {
   def fromString(str: String): Option[FileStatus] = FileStatus.values.find(_.toString == str)

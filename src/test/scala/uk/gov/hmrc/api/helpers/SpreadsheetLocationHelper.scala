@@ -47,4 +47,12 @@ object SpreadsheetLocationHelper {
       case ValidationType.CommunityBuildings => s"community_buildings_excel-$spreadsheetType.ods"
       case ValidationType.ConnectedCharities => s"connected_charities_schedule__Excel_$spreadsheetType.ods"
     }
+
+  def getFilenameInvalid(validationType: ValidationType, spreadsheetType: String = "BadData"): String =
+    validationType match {
+      case ValidationType.GiftAid            => s"gift-aid-schedule-$spreadsheetType.ods"
+      case ValidationType.OtherIncome        => s"other_income_schedule-$spreadsheetType.ods"
+      case ValidationType.CommunityBuildings => s"community_buildings_excel-$spreadsheetType.ods"
+      case ValidationType.ConnectedCharities => s"connected_charities_schedule__Excel_$spreadsheetType.ods"
+    }
 }

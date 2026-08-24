@@ -145,23 +145,20 @@ trait BaseSpec extends AnyFeatureSpec with GivenWhenThen with Matchers with Befo
     validationType: ValidationType,
     fileStatus: FileStatus
   ): Unit = {
-    val reference = GetUploadResultData.getCorrectReference(validationType, fileStatus)
-    // TODO: Again waiting implementation from devs
-    // val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
+    val reference  = GetUploadResultData.getCorrectReference(validationType, fileStatus)
+    val typeOfData = GetUploadResultData.getCorrectJsonBodyFieldName(validationType)
 
     Then(s"The response for $validationType and data is $fileStatus is what we expect")
     (Json.parse(response.body) \ "reference").as[String]      shouldEqual reference
     (Json.parse(response.body) \ "validationType").as[String] shouldEqual validationType.toString
     (Json.parse(response.body) \ "fileStatus")
       .as[String]                                                  should (be(FileStatus.VALIDATED.toString) or be(FileStatus.VALIDATION_FAILED.toString))
+    (Json.parse(response.body) \ typeOfData).asOpt[String]       shouldBe defined
 
-    // TODO: Uncomment once GiftAid validation is fixed
-//    (Json.parse(response.body) \ typeOfData).asOpt[String]       shouldBe defined
-//
-//    if (fileStatus == FileStatus.VALIDATION_FAILED) {
-//      And("We have invalid data so an additional check for errors")
-//      (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
-//    }
+    if (fileStatus == FileStatus.VALIDATION_FAILED) {
+      And("We have invalid data so an additional check for errors")
+      (Json.parse(response.body) \ "errors").asOpt[String] shouldBe defined
+    }
 
     And("Response code should be 200")
     checkStatusCode(response, 200)

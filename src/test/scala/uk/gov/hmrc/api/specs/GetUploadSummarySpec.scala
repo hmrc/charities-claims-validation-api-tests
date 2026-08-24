@@ -28,6 +28,41 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
     * expected
     */
   Feature("Charities - Get Upload Summary API - E2E") {
+    Scenario("Starting a GiftAid claim and providing valid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.GiftAid),
+        validationType = ValidationType.GiftAid
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.GiftAid),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.GiftAid),
+          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.GiftAid)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.GiftAid,
+        FileStatus.VALIDATED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
     Scenario("Starting a OtherIncome claim and providing valid data to Upscan", E2ETest) {
       uploadTestData(
         authToken,
@@ -62,10 +97,222 @@ class GetUploadSummarySpec extends BaseSpec with UploadTestDataHelper {
         isRaceCondition = true
       )
     }
+
+    Scenario("Starting a CommunityBuildings claim and providing valid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.CommunityBuildings),
+        validationType = ValidationType.CommunityBuildings
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.CommunityBuildings),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.CommunityBuildings),
+          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.CommunityBuildings)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.CommunityBuildings,
+        FileStatus.VALIDATED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
+    Scenario("Starting a ConnectedCharities claim and providing valid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.ConnectedCharities),
+        validationType = ValidationType.ConnectedCharities
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.ConnectedCharities),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.ConnectedCharities),
+          fileName = SpreadsheetLocationHelper.getFilename(ValidationType.ConnectedCharities)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.ConnectedCharities,
+        FileStatus.VALIDATED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
+// invalid scenarios
+
+    Scenario("Starting a GiftAid claim and providing invalid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.GiftAid),
+        validationType = ValidationType.GiftAid
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.GiftAid),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.GiftAid),
+          fileName = SpreadsheetLocationHelper.getFilenameInvalid(ValidationType.GiftAid)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.GiftAid),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.GiftAid,
+        FileStatus.VALIDATION_FAILED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
+    Scenario("Starting a OtherIncome claim and providing invalid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
+        validationType = ValidationType.OtherIncome
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.OtherIncome),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.OtherIncome),
+          fileName = SpreadsheetLocationHelper.getFilenameInvalid(ValidationType.OtherIncome)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.OtherIncome),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.OtherIncome,
+        FileStatus.VALIDATION_FAILED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
+    Scenario("Starting a CommunityBuildings claim and providing invalid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.CommunityBuildings),
+        validationType = ValidationType.CommunityBuildings
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.CommunityBuildings),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.CommunityBuildings),
+          fileName = SpreadsheetLocationHelper.getFilenameInvalid(ValidationType.CommunityBuildings)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.CommunityBuildings),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.CommunityBuildings,
+        FileStatus.VALIDATION_FAILED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
+
+    Scenario("Starting a ConnectedCharities claim and providing invalid data to Upscan", E2ETest) {
+      uploadTestData(
+        authToken,
+        claimId = GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        reference = GetUploadSummaryData.getIndividualReference(ValidationType.ConnectedCharities),
+        validationType = ValidationType.ConnectedCharities
+      )
+
+      When("We provide upscan with a valid payload that has a reference to the valid spreadsheet value")
+      createUpscanService.postSuccessfulPayloadObject(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        CreateUpscanCallbackData.getSuccessfulCreateUpscanCallbackPayloadWithReference(
+          reference = GetUploadSummaryData.getIndividualReference(ValidationType.ConnectedCharities),
+          downloadUrl = SpreadsheetLocationHelper.getFileLocations(ValidationType.ConnectedCharities),
+          fileName = SpreadsheetLocationHelper.getFilenameInvalid(ValidationType.ConnectedCharities)
+        ),
+        authToken
+      )
+
+      Then("We call the GetUploadSummary API")
+      val response = getUploadSummaryService.getUploadSummaryResults(
+        GetUploadSummaryData.getIndividualClaimID(ValidationType.ConnectedCharities),
+        authToken
+      )
+
+      Then("We check the response of the returned Validated Data")
+      checkCommonResponseBodies(
+        response,
+        ValidationType.ConnectedCharities,
+        FileStatus.VALIDATION_FAILED,
+        isWrappedByUploadsArray = true,
+        isRaceCondition = true
+      )
+    }
   }
 
   Feature("Charities - Get Upload Summary API - Testing all response variations") {
-    Scenario("Testing the four variations of 'validationType' where one associate claimID is returned") {
+    Scenario("Testing the four variations of 'validationType' where one associate claimID is returned", E2ETest) {
       authToken
 
       /** Successfully update test data */
